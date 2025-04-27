@@ -209,7 +209,7 @@ The mill will lower very, very slowly until it touches the surface of the copper
 
 Disconnect all but the ring terminal and remove it from the work area. Close the door.
 
-**The ring terminal stays attached!** Don't touch the screw. It will invalidate the height map!
+**The ring terminal stays attached!** Don't touch any screws. It will invalidate the height map!
 
 ### Apply HeightMap
 
