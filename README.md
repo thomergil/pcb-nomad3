@@ -149,6 +149,7 @@ OpenCNCPilot is a little quirky, but it does everything you need. Please start b
 * You cannot easily reposition the view, but you can zoom in and zoom out and use it to "direct" the view. Under the **Debug** menu (on the right) you can **Lay flat 3D Viewport** and **Restore Viewport**.
 * While learning OpenCNCPilot, I destroyed a half-dozen mill bits. I suggest you **start with cheap throwaway bits** while you're learning.
 * You can home to (X = 0, Y = 0) without changing height by typing `G0 X0 Y0` in the field under the **Manual** menu and then pressing **Send**. Make sure the bit is at a safe height.
+* If the machine seems to get stuck or OpenCNCPilot seems frozen, try the **Soft Reset** button before resetting the machine.
 
 ### OpenCNCPilot and Carbide Motion don't play nice
 
@@ -172,7 +173,7 @@ Make sure you get exactly to the bottom left corner in terms of X and Y, but don
 
 Once the mill is positioned correctly, press the **Zero (G92)** button and then **Send** it to the machine.
 
-If you need to re-home or reset the machine, you can verify that X and Y are still correct by sending `G0 X0 Y0` to the machine. Make sure the mill is high enough when you do!
+If you need to re-home or reset the machine, you can verify that X and Y are still correct by sending `G0 X0 Y0` to the machine using the **Manual** menu. Make sure the mill is high enough when you do!
 
 ### Raise the bit to a comfortable height
 
@@ -208,15 +209,15 @@ If the machine pauses or freezes, press the **Start** button. There are **TWO** 
 
 The mill will lower very, very slowly until it touches the surface of the copper clad. It will visit all red points. Don't worry about the order. It will eventually visit all of them.
 
+### Disconnect hardware; leave the ring terminal
+
+Disconnect all but the ring terminal and remove it from the work area. Close the door.
+
+**The ring terminal stays attached!** Don't touch the screw. It will invalidate the height map!
+
 ### Apply HeightMap
 
 In the **Edit** menu, press **Apply HeightMap**.
-
-### Disconnect hardware; leave the ring terminal
-
-Disconnect all but the terminal screw and remove it from the work area. Close the door.
-
-**The ring terminal stays attached!** Don't touch the screw. It will invalidate the height map.
 
 ### Start!
 
