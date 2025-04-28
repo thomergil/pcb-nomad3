@@ -12,7 +12,7 @@ Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) and
 
 # Acknowledgements
 
-This has been partly inspired by [Chris Kohlhardt's notes](https://www.chriskohlhardt.com/small-double-sided-pcb-traces-on-nomad-cnc). He does it with FlatCAM and bCNC. I found both rather inscrutable.
+This has been partly inspired by [Chris Kohlhardt's notes](https://www.chriskohlhardt.com/small-double-sided-pcb-traces-on-nomad-cnc). He does it with FlatCAM and bCNC. I found both rather inscrutable. Thank you to https://github.com/deHarro for the [feedback](https://github.com/martin2250/OpenCNCPilot/issues/201).
 
 # CNC Machine
 
@@ -200,6 +200,7 @@ OpenCNCPilot is a little quirky, but it does everything you need. Please start b
 
 ![home-xy](img/home-xy.png)
 
+* Consider making `G0 X0 Y0` a new macro using the **Macro** menu.
 * If the machine seems to get stuck or OpenCNCPilot seems frozen, try the **Soft Reset** button before resetting the machine.
 
 ### OpenCNCPilot and Carbide Motion don't play nice
@@ -266,7 +267,7 @@ Stay close to the machine.
 
 If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu, and sometimes, you need to use the one at the top of the user interface.
 
-The mill will lower very, very slowly until it touches the surface of the copper clad. It will visit all red points. Don't worry about the order. It will eventually visit all of them.
+The mill will lower very, very slowly until it touches the surface of the copper clad. It will visit all red points. Don't worry about the order; it will eventually visit all of them.
 
 ### Disconnect hardware; leave the ring terminal
 
