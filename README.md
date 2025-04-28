@@ -4,9 +4,8 @@ I tried everything between [Carbide Copper](https://carbide3d.com/copper/), whic
 
 Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) and [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot), which supports auto-leveling. Unfortunately–I typically use Mac and Linux–**OpenCNCPilot only works on Windows**. Annoying as that may be, it might be worth the sacrifice, in this case. You can operate your Nomad 3 fully using Windows.
 
-```
+**Video of probing**
 [![Probing](https://vumbnail.com/1079226042:94c5d7b287.jpg)](https://vimeo.com/1079226042/94c5d7b287)
-```
 
 # Acknowledgements
 
