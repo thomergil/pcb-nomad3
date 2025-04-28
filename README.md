@@ -42,7 +42,7 @@ I use 2x3" and 4x6" PCB blanks that I order [from Carbide 3D](https://shop.carbi
 
 # Jigs
 
-I provide several different jigs on http://printables.com.
+I provide several different jigs on http://printables.com [TODO].
 
 * A jig for drilling and etching a 2x3" copper clad.
 * A jig just for drilling a 2x3" copper clad.
