@@ -163,7 +163,7 @@ Generate the **back** file, assuming you turn it over in the left/right directio
 pcb2gcode --back decibel-meter-B_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=38.1
 ```
 
-This creates a `.ngc` file.
+You should now have three `.ngc` files.
 
 # Attach copper clad to jig
 
@@ -245,6 +245,8 @@ Open the **Probe** menu:
 * Clip the magnet against the collar.
 * Clip the alligator clip on the bolt.
 
+![bitzero-rig](bitzero-rig2.png)
+
 ### Run Probe
 
 Stay close to the machine.
@@ -270,4 +272,21 @@ In the **Edit** menu, press **Apply HeightMap**.
 
 Under **File**, press **Start**.
 
-If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu, and sometimes, you need to use the one at the top of the user interface.
+If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu; at other times, you have to use the one at the top of the user interface.
+
+### Replacing bits and/or flipping the copper clad
+
+When you replace a bit (for example, to go from milling to drilling), you **must home again**.
+
+If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/drilling again. If you only replaced the bit and did not flip the board, you must only zero Z again.
+
+* Using keyboard jogging, raise the mill to a comfortable height.
+* Replace the bit.
+* Attach the rigged BitZero.
+* Issue the `G0 X0 Y0` command, which places you over your current X, Y home.
+* Using keyboard jogging, carefully lower the Feed from 1000 to 100 to 10 to 1 until the BitZero light turns red. (If you flipped the board, you must also use left, right, up, and down to (re)place the bit over the bottom left corner.)
+* Press the **Zero (G91)** key and **Send**.
+
+* Raise the mill back to a comfortable height.
+* Remove the rigged BitZero, but leave the ring terminal; do not touch the screws.
+* If you flipped the board, you must plot again before milling or drilling.
