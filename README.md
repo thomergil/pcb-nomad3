@@ -61,9 +61,17 @@ The BitZero is squeezed on both sides by two metal rings, held in place by a bol
 
 ![bitzero-rig](bitzero-rig2.png)
 
-# Prepare the Copper Clad
+# Outline
 
-Apply two-sided tape to the copper clad. Fit it into the appropriate part of the jig. Drill 3.5mm holes into the four corners of the copper clad. 
+* Drill mounting holes
+* Export Gerber files
+* Mill front, flip
+* Mill back, flip back
+* Drill holes
+
+# Drill mounting holes
+
+Apply two-sided tape to the copper clad. Fit it into the appropriate part of the jig. Drill 3.1mm to 3.5mm holes into the four corners of the copper clad. The tighter the hole, the more precise the fit when you flip over the board.
 
 # KiCad PCB Editor
 
@@ -272,7 +280,7 @@ In the **Edit** menu, press **Apply HeightMap**.
 
 Under **File**, press **Start**.
 
-If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu; at other times, you have to use the one at the top of the user interface.
+If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu; at other times, you need to use the one at the top of the user interface. (I am [confused about this](https://github.com/martin2250/OpenCNCPilot/issues/200).)
 
 ### Replacing bits and/or flipping the copper clad
 
