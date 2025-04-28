@@ -122,19 +122,22 @@ Create a file `millproject` in the same directory as the `.gbr` files.
 metric=true
 metricoutput=true
 
+# milling
 zwork=-0.05          # Depth in mm,
 zsafe=20             # Height for movements
 zchange=35           # Height for tool changes
 mill-feed=100        # Feed rate in mm/minute
-mill-speed=12000     # RPM
+mill-speed=12000     # RPM for milling
 nom6=1               # Don't issue M6 command
 spinup-time=3.0      # Time to spin up the spindle in seconds
 spindown-time=3.0    # Time to spin up the spindle in seconds
 backtrack=0          # Don't criss-cross copper; always travel at zsafe
 
-zdrill=-1.7
-drill-feed=60
-drill-speed=10000
+# drilling
+zdrill=-1.7					 # Drill depth; measure your copper clad
+drill-feed=60				 # Feed rate in mm/minute
+drill-speed=10000    # RPM for drilling
+nog81=1              # Use G0/G1 instead of G81/G80
 
 # this will mess up offset! don't use!
 # zero-start=true
@@ -146,6 +149,7 @@ Some of these values are **critically important**:
 * `zchange` is the height for changing the mill bit; if you choose this number too high and your drill bit is long, the process will error out, because it runs into the hard limit of the machine.
 * `zwork` is how deep the mill drills into the copper substrate; start with `0.025` (for a 60º Vbit) or `0.03` and iterate deeper as needed; this also depends on the Vee bit you are using.
 * `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3. 
+* `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
 
 Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **front**:
 
@@ -225,7 +229,7 @@ In the **Manual** menu, :heavy_check_mark: the **Enable Keyboard Jogging**, and 
 
 Make sure you get exactly to the bottom left corner in terms of X and Y, but don't worry about the right Z. You can stay slightly above the surface. Try to get it within 1mm. We will take care of Z later.
 
-Once the mill is positioned correctly, press the **Zero (G92)** button and then **Send** it to the machine.
+Once the mill is positioned correctly, press the **Zero (G10)** button and then **Send** it to the machine.
 
 If you need to re-home or reset the machine, you can verify that X and Y are still correct by sending `G0 X0 Y0` to the machine using the **Manual** menu. Make sure the mill is high enough when you do!
 
