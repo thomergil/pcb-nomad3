@@ -6,7 +6,7 @@ I tried everything between [Carbide Copper](https://carbide3d.com/copper/), whic
 
 Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) and [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot), which supports auto-leveling. Unfortunately–I typically use Mac and Linux–**OpenCNCPilot only works on Windows**. Annoying as that may be, it might be worth the sacrifice, in this case. You can operate your Nomad 3 fully using Windows.
 
-# Video
+# Video (will navigate you away)
 
 [![Probing](https://vumbnail.com/1079226042:94c5d7b287.jpg)](https://vimeo.com/1079226042/94c5d7b287)
 
@@ -104,6 +104,7 @@ Create a file `millproject` in the same directory as the `.gbr` files.
 ```
 metric=true
 metricoutput=true
+
 zwork=-0.05          # Depth in mm,
 zsafe=20             # Height for movements
 zchange=55           # Height for tool changes
@@ -113,6 +114,10 @@ nom6=1               # Don't issue M6 command
 spinup-time=3.0      # Time to spin up the spindle in seconds
 spindown-time=3.0    # Time to spin up the spindle in seconds
 backtrack=0          # Don't criss-cross copper; always travel at zsafe
+
+zdrill=-1.7
+drill-feed=60
+drill-speed=10000
 
 # this will mess up offset! don't use!
 # zero-start=true
@@ -124,12 +129,30 @@ Some of these values are **critically important**:
 * `zwork` is how deep the mill drills into the copper substrate; start with `0.025` (for a 60º Vbit) or `0.03` and iterate deeper as needed; this also depends on the Vee bit you are using.
 * `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3. 
 
-Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode):
+Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **front**:
 
 ```bash
 # replace "decibel-metel-F_Cu.gbr" with your F_Cu file
 # --basename is optional, but without it, the output will be "front.ngc"
 pcb2gcode --front decibel-meter-F_Cu.gbr --basename db-LED
+```
+
+Generate the Excelon **drill** file:
+
+```bash
+pcb2gcode --drill decibel-meter-PTH.drl --basename db-LED --output-dir ~/save/cnc/
+```
+
+Generate the **back** file, assuming you turn it over in the left/right direction and your PCB is centered **exactly through the middle**.
+
+```bash
+pcb2gcode --back decibel-meter-B_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=0
+```
+
+Generate the **back** file, assuming you turn it over in the left/right direction while telling `pcb2code` to flip it around the center axis of a 3" copper clad (i.e, 76.2mm full width, halfway is 38.1mm):
+
+```bash
+pcb2gcode --back decibel-meter-B_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=38.1
 ```
 
 This creates a `.ngc` file.
