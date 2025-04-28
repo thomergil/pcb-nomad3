@@ -124,7 +124,7 @@ metricoutput=true
 
 zwork=-0.05          # Depth in mm,
 zsafe=20             # Height for movements
-zchange=55           # Height for tool changes
+zchange=35           # Height for tool changes
 mill-feed=100        # Feed rate in mm/minute
 mill-speed=12000     # RPM
 nom6=1               # Don't issue M6 command
@@ -143,6 +143,7 @@ drill-speed=10000
 Some of these values are **critically important**:
 
 * `zsafe` is the travel height of the mill bit; **if this is too low your bit will crash into the jig or screws, breaking the mill or worse**; I recommend at least 20 (mm), but a higher value is fine. It will be slower but safer.
+* `zchange` is the height for changing the mill bit; if you choose this number too high and your drill bit is long, the process will error out, because it runs into the hard limit of the machine.
 * `zwork` is how deep the mill drills into the copper substrate; start with `0.025` (for a 60º Vbit) or `0.03` and iterate deeper as needed; this also depends on the Vee bit you are using.
 * `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3. 
 
