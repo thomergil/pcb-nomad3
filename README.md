@@ -80,7 +80,7 @@ A KiCad tutorial is outside this document's scope, but a few things to keep in m
 * Make the Edge Cut layer match exactly the dimensions of the PCB blank.
 * If you are following this tutorial, there will be screws in the corners, keep your circuitry plenty far away from the corners.
 * Ensure a few millimeters of space between the edges and the circuitry.
-* Using **File** → **Board Setup** → **Design Rules** → **Net Classes** set track width to a minimum 0.5mm. If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors as a result of the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
+* Using **File** → **Board Setup** → **Design Rules** → **Net Classes** set track width to a **minimum 0.5mm**. If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors as a result of the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
 * Using menu Place → Place Drill/Place File Origin, place the origin at the bottom left of the Edge Cut layer.
 * Similarly, using menu Place → Grid Origin, place the origin at the bottom left of the Edge Cut layer.
 
