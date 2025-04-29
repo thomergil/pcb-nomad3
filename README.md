@@ -36,9 +36,12 @@ You'll likely start with your entire PCB on one side but are soldering pins on t
 * [Coated 30º V-Groove bits from bits&bits](https://bitsbits.com/product/60-degree-v-groove/)
 * [FoxAlien 30º bits via Amazon](https://a.co/d/37hDOj5)
 
-60º V-bits:
+40º V-bits:
 
 * [#502 PCB Engraver (40º) bits from Carbide3D](https://shop.carbide3d.com/products/502-engraving-bit?_pos=2&_psq=pcb&_ss=e&_v=1.0)
+
+60º V-bits:
+
 * [Coated 60º V-Groove bits from bits&bits](https://bitsbits.com/product/425-vg30/)
 * [FoxAlien 60º bits via Amazon](https://www.amazon.com/dp/B08881PKBN?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1)
 
