@@ -264,7 +264,7 @@ Open the **Probe** menu:
 
 ### Get hardware ready
 
-* Clip the magnet against the collar.
+* Attach the magnet against the collar.
 * Clip the alligator clip on the copper clad.
 * Clip the other alligator clip on the BitZero rig.
 
