@@ -44,7 +44,7 @@ You'll likely start with your entire PCB on one side but are soldering pins on t
 
 # Jigs
 
-I provide [several different-sized jigs on printables.com][https://www.printables.com/model/1280313-copper-clad-pcb-jig-for-cnc-machine]. Please be in touch if you need additional sizes. If you do not have access to a 3D printer, I can print them and send them to you for $49.99 plus shipping. Others can do it, no doubt, for much less. 🙂
+I provide [several different-sized jigs on printables.com](https://www.printables.com/model/1280313-copper-clad-pcb-jig-for-cnc-machine). Please be in touch if you need additional sizes. If you do not have access to a 3D printer, I can print them and send them to you for $49.99 plus shipping. Others can do it, no doubt, for much less. 🙂
 
 # BitZero attachment
 
