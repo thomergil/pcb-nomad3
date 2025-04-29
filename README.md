@@ -8,11 +8,11 @@ Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) and
 
 # Video (will navigate you away)
 
-[![Probing](https://vumbnail.com/1079226042:94c5d7b287.jpg)](https://vimeo.com/1079226042/94c5d7b287)
+[![Probing](https://vumbnail.com/1079839701:e5094529f5.jpg)](https://vimeo.com/1079839701/e5094529f5)
 
 # Acknowledgements
 
-This has been partly inspired by [Chris Kohlhardt's notes](https://www.chriskohlhardt.com/small-double-sided-pcb-traces-on-nomad-cnc). He does it with FlatCAM and bCNC. I found both rather inscrutable. Thank you to https://github.com/deHarro for the [feedback](https://github.com/martin2250/OpenCNCPilot/issues/201).
+This has been partly inspired by [Chris Kohlhardt's notes](https://www.chriskohlhardt.com/small-double-sided-pcb-traces-on-nomad-cnc). He does it with FlatCAM and bCNC. I found both rather inscrutable. Thank you to https://github.com/deHarro and https://github.com/martin2250 for the [feedback](https://github.com/martin2250/OpenCNCPilot/issues/201).
 
 # CNC Machine
 
@@ -44,9 +44,7 @@ You'll likely start with your entire PCB on one side but are soldering pins on t
 
 # Jigs
 
-I provide several different jigs on http://printables.com [TODO].
-
-* [TODO]
+I provide [several different-sized jigs on printable.com][https://www.printables.com/model/1280313-copper-clad-pcb-jig-for-cnc-machine]. Please be in touch if you need additional sizes. If you do not have access to a 3D printer, I can print them and send them to you for $49.99 plus shipping. Others can do it, no doubt, for much less. 🙂
 
 # BitZero attachment
 
@@ -155,12 +153,13 @@ Some of these values are **critically important**:
 * `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3. 
 * `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
 
-Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **front**:
+Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**, which, confusingly, is what we're going to mill.
 
 ```bash
 # replace "decibel-metel-F_Cu.gbr" with your F_Cu file
 # --basename is optional, but without it, the output will be "front.ngc"
-pcb2gcode --front decibel-meter-F_Cu.gbr --basename db-LED
+# --x-offset is needed to move the PCB to the right of the origin
+pcb2gcode --back decibel-meter-B_Cu.gbr --x-offset -72.2mm --basename db-LED --output-dir ~/save/cnc/
 ```
 
 Generate the Excelon **drill** file:
@@ -169,16 +168,16 @@ Generate the Excelon **drill** file:
 pcb2gcode --drill decibel-meter-PTH.drl --basename db-LED --output-dir ~/save/cnc/
 ```
 
-Variant 1: If you plan on a double-sided board, generate the **back** file, assuming you turn it over in the left/right direction and your PCB is centered **exactly through the middle**.
+Variant 1: If you plan on a double-sided board, generate the **front** file, assuming you turn it over in the left/right direction and your PCB is centered **exactly through the middle**.
 
 ```bash
-pcb2gcode --back decibel-meter-B_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=0
+pcb2gcode --back decibel-meter-F_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=0
 ```
 
-Variant 2: If you plan on a double-sided board, generate the **back** file, assuming you turn it over in the left/right direction while telling `pcb2code` to flip it around the center axis of a 3" copper clad (i.e, 76.2mm full width, halfway is 38.1mm):
+Variant 2: If you plan on a double-sided board, generate the **front** file, assuming you turn it over in the left/right direction while telling `pcb2code` to flip it around the center axis of a 3" copper clad (i.e, 76.2mm full width, halfway is 38.1mm):
 
 ```bash
-pcb2gcode --back decibel-meter-B_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=38.1
+pcb2gcode --back decibel-meter-F_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=38.1
 ```
 
 You should now have three `.ngc` files.
@@ -187,7 +186,11 @@ You should now have three `.ngc` files.
 
 Cover the entire bottom surface of the copper clad (all the way to the edges) with non-overlapping double-sided tape. Don't just tape the middle because the sides will flex downward during probing.
 
-![bitzero-rig](img/bitzero-rig2.png)
+![tape](img/tape.png)
+
+Then press the copper clad into the jig:
+
+![clad-in-jig](img/clad-in-jig.png)
 
 # OpenCNCPilot
 
@@ -236,6 +239,8 @@ In the **Manual** menu, :heavy_check_mark: the **Enable Keyboard Jogging**, and 
 
 Make sure you get exactly to the bottom left corner in terms of X and Y, but don't worry about the right Z. You can stay slightly above the surface. Try to get it within 1mm. We will take care of Z later.
 
+![zero](img/zero.png)
+
 Once the mill is positioned correctly, press the **Zero (G10)** button and then **Send** it to the machine.
 
 If you need to re-home or reset the machine, you can verify that X and Y are still correct by sending `G0 X0 Y0` to the machine using the **Manual** menu. Make sure the mill is high enough when you do!
@@ -266,6 +271,7 @@ Open the **Probe** menu:
 
 * Clip the magnet against the collar.
 * Clip the alligator clip on the copper clad.
+* Clip the other alligator clip on the BitZero rig.
 
 ![bitzero-rig](img/bitzero-rig2.png)
 
@@ -279,6 +285,10 @@ Stay close to the machine.
 If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu, and sometimes, you need to use the one at the top of the user interface.
 
 The mill will lower very, very slowly until it touches the surface of the copper clad. It will visit all red points. Don't worry about the order; it will eventually visit all of them.
+
+The result will be a height map:
+
+![heightmap](img/heightmap.png)
 
 ### Remove all hardware
 
