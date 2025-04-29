@@ -298,7 +298,7 @@ Under **File**, press **Start**.
 
 If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu; at other times, you need to use the one at the top of the user interface. (I am [confused about this](https://github.com/martin2250/OpenCNCPilot/issues/200).)
 
-### Replacing bits and/or flipping the copper clad
+### Replacing bits for drilling and/or flipping the copper clad
 
 When you replace a bit (for example, to go from milling to drilling), you **must set Z again**:
 
@@ -312,7 +312,11 @@ When you replace a bit (for example, to go from milling to drilling), you **must
 
 * Send the `G10 L20 P1 Z0` command or use your new **Set Z=0** macro. You have now re-zeroed Z.
 
-* **Load** the drilling Gcode, **Apply HeightMap** and **Start**.
+* **Load** the drilling Gcode
+
+* **Apply HeightMap**
+
+* **Start**; my drill file pauses at least 2-3 times, and I need to press **Start** to continue
 
   
 
