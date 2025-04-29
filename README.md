@@ -195,7 +195,7 @@ OpenCNCPilot is a little quirky, but it does everything you need. Please start b
 
 * As you learn to use OpenCNCPilot, **stay close to your CNC machine with your finger on the power switch**.
 * There is not enough vertical space in the user interface to fold open all menus, so you need to manage them. You'll use **File**, and **Edit**, and **Probing**, and **Manual**, and **Manual Probing**. I try to only ever open one at a time and close the ones I don't use.
-* You cannot easily reposition the view, but you can zoom in and zoom out and use it to "direct" the view. Under the **Debug** menu (on the right) you can **Lay flat 3D Viewport** and **Restore Viewport**.
+* You can reposition the view with the middle mouse button if you have three mouse positions. If you don't, you can zoom in and zoom out with the right mouse button and use it to "direct" the view. Under the **Debug** menu (on the right) you can **Lay flat 3D Viewport** and **Restore Viewport**.
 
 ![viewport](img/viewport.png)
 
