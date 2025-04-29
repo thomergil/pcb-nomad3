@@ -24,17 +24,19 @@ Unfortunately, [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot) exists
 
 # PCB blanks / Copper Clad
 
-I use 2x3" and 4x6" PCB blanks that I order [from Carbide 3D](https://shop.carbide3d.com/collections/materials/products/fr1-copper-clad?variant=41237063046). They come single-sided ("SS") or double-sided ("DS"). They are also sold on Amazon and AliExpress.
+I use 2x3" and 4x6" PCB blanks that I order [from Carbide 3D](https://shop.carbide3d.com/collections/materials/products/fr1-copper-clad?variant=41237063046). They are single-sided ("SS") or double-sided ("DS") and are also sold on Amazon and AliExpress.
+
+You'll likely start with your entire PCB on one side but are soldering pins on the other, so **you need double-sided copper clad**.
 
 # Drill/Mill bits
 
-30º Vee bits:
+30º V-bits:
 
 * [#501 PCB Engraver (30º) bits from Carbide 3D](https://shop.carbide3d.com/products/501-engraving-bit?_pos=3&_psq=pcb&_ss=e&_v=1.0) 
 * [Coated 30º V-Groove bits from bits&bits](https://bitsbits.com/product/60-degree-v-groove/)
 * [FoxAlien 30º bits via Amazon](https://a.co/d/37hDOj5)
 
-60º Vee bits:
+60º V-bits:
 
 * [#502 PCB Engraver (40º) bits from Carbide3D](https://shop.carbide3d.com/products/502-engraving-bit?_pos=2&_psq=pcb&_ss=e&_v=1.0)
 * [Coated 60º V-Groove bits from bits&bits](https://bitsbits.com/product/425-vg30/)
@@ -44,12 +46,7 @@ I use 2x3" and 4x6" PCB blanks that I order [from Carbide 3D](https://shop.carbi
 
 I provide several different jigs on http://printables.com [TODO].
 
-* A jig for drilling and etching a 2x3" copper clad.
-* A jig just for drilling a 2x3" copper clad.
-* A jig just for drilling a 4x6" copper clad.
-* A jig for etching a 2x3" and 4x6" copper clad.
-
-If you don't have access to a 3D printer, contact me, and I can make them for you if time allows. (Large ones are $49.99, and small ones are $39.99 plus shipping.)
+* [TODO]
 
 # BitZero attachment
 
@@ -57,32 +54,39 @@ You need to rig the [BitZero V2](https://shop.carbide3d.com/products/bitzero-v2-
 
 ![bitzero-rig](img/bitzero-rig1.png)
 
-The BitZero is squeezed on both sides by two metal rings, held in place by a bolt and screw; an alligator clip attaches to the bolt. The alligator clip connects to a ring terminal that attaches to the copper clad as follows:
+The BitZero is squeezed on both sides by two metal rings, held in place by a bolt and screw; an alligator clip attaches to the bolt. The alligator clip connects to an alligator clip that attaches to the copper clad.
 
 ![bitzero-rig](img/bitzero-rig2.png)
 
 # Outline
 
-* Drill mounting holes
-* Export Gerber files
-* Mill front, flip
-* Mill back, flip back
-* Drill holes
+* Adjust the PCB design.
+* Export Gerber files.
+* Mill front.
+* Drill holes.
 
-# Drill mounting holes
+If you are milling both sides, you should **drill after milling both sides**; otherwise, you are level-probing a surface with holes.
 
-Apply two-sided tape to the copper clad. Fit it into the appropriate part of the jig. Drill 3.1mm to 3.5mm holes into the four corners of the copper clad. The tighter the hole, the more precise the fit when you flip over the board.
+# Single-layer design on B.Cu
 
-# KiCad PCB Editor
+This tutorial assumes you are making **a single-layer PCB** where you plug in components at the top and solder them at the bottom. This means **your entire PCB design needs to be on B.Cu**.
 
-A KiCad tutorial is outside this document's scope, but a few things to keep in mind when exporting from KiCad's PCB editor:
+If you initially designed your board for manufacturing (e.g., JLCPCB, PCBWay, OSH Park, etc.), you likely put the GND plane on B.Cu and the signal traces on F.Cu. That will **not work** for CNC manufacturing. (I discovered this the hard way when all my pin holes were mirrored.)
+
+To adapt the design for CNC manufacturing, you need to move all routing (including GND) to F.Cu. Since GND is no longer taken care of, this likely requires re-routing traces.
+
+While you are at it, you need to also make the tracks wider: using **File** → **Board Setup** → **Design Rules** → **Net Classes** set track width to a **minimum 0.5mm**. If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors due to the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
+
+Once everything is on F.Cu, you can swap F.Cu and B.Cu (using menu **Edit** → **Swap Layers...**) to transpose F.Cu to the back. Alternatively, if you are not planning to use a PCB manufacturing service, you can do all routing on B.Cu from the start.
+
+# KiCad PCB Export
+
+A few things to keep in mind when exporting from KiCad's PCB editor:
 
 * Make the Edge Cut layer match exactly the dimensions of the PCB blank.
-* If you are following this tutorial, there will be screws in the corners, keep your circuitry plenty far away from the corners.
-* Ensure a few millimeters of space between the edges and the circuitry.
-* Using **File** → **Board Setup** → **Design Rules** → **Net Classes** set track width to a **minimum 0.5mm**. If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors as a result of the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
-* Using menu Place → Place Drill/Place File Origin, place the origin at the bottom left of the Edge Cut layer.
-* Similarly, using menu Place → Grid Origin, place the origin at the bottom left of the Edge Cut layer.
+* Ensure a enough space (I recommend at least 2mm) between the edges and the circuitry.
+* Using menu **Place** → **Place Drill/Place File Origin**, place the origin at the bottom left of the Edge Cut layer.
+* Similarly, using menu **Place** → **Grid Origin**, place the origin at the bottom left of the Edge Cut layer.
 
 ![kicad-origin](img/kicad-origin.png)
 
@@ -124,7 +128,7 @@ metricoutput=true
 
 # milling
 zwork=-0.05          # Depth in mm,
-zsafe=20             # Height for movements
+zsafe=20             # Height for movements; can be as low as 2mm if you are confident
 zchange=35           # Height for tool changes
 mill-feed=100        # Feed rate in mm/minute
 mill-speed=12000     # RPM for milling
@@ -145,9 +149,9 @@ nog81=1              # Use G0/G1 instead of G81/G80
 
 Some of these values are **critically important**:
 
-* `zsafe` is the travel height of the mill bit; **if this is too low your bit will crash into the jig or screws, breaking the mill or worse**; I recommend at least 20 (mm), but a higher value is fine. It will be slower but safer.
+* `zsafe` is the travel height of the mill bit; **if this is too low your bit will crash into the jig, breaking the mill or worse**. Once you get the hang of it, you can make this as low as 2. 
 * `zchange` is the height for changing the mill bit; if you choose this number too high and your drill bit is long, the process will error out, because it runs into the hard limit of the machine.
-* `zwork` is how deep the mill drills into the copper substrate; start with `0.025` (for a 60º Vbit) or `0.03` and iterate deeper as needed; this also depends on the Vee bit you are using.
+* `zwork` is how deep the mill drills into the copper substrate; start with `0.5` (for a 30º Vbit) or `0.05` and iterate deeper as needed; this also depends on the V-bit you are using.
 * `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3. 
 * `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
 
@@ -165,13 +169,13 @@ Generate the Excelon **drill** file:
 pcb2gcode --drill decibel-meter-PTH.drl --basename db-LED --output-dir ~/save/cnc/
 ```
 
-Generate the **back** file, assuming you turn it over in the left/right direction and your PCB is centered **exactly through the middle**.
+Variant 1: If you plan on a double-sided board, generate the **back** file, assuming you turn it over in the left/right direction and your PCB is centered **exactly through the middle**.
 
 ```bash
 pcb2gcode --back decibel-meter-B_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=0
 ```
 
-Generate the **back** file, assuming you turn it over in the left/right direction while telling `pcb2code` to flip it around the center axis of a 3" copper clad (i.e, 76.2mm full width, halfway is 38.1mm):
+Variant 2: If you plan on a double-sided board, generate the **back** file, assuming you turn it over in the left/right direction while telling `pcb2code` to flip it around the center axis of a 3" copper clad (i.e, 76.2mm full width, halfway is 38.1mm):
 
 ```bash
 pcb2gcode --back decibel-meter-B_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=38.1
@@ -181,9 +185,7 @@ You should now have three `.ngc` files.
 
 # Attach copper clad to jig
 
-Place copper clad into jig, attach with 4 screws. Make sure the ring terminal is **on top** of the copper clad, but under the screw.
-
-Do **not overtighten** the screws. It makes it worse, not better.
+Cover the entire bottom surface of the copper clad (all the way to the edges) with non-overlapping double-sided tape. Don't just tape the middle because the sides will flex downward during probing.
 
 ![bitzero-rig](img/bitzero-rig2.png)
 
@@ -204,7 +206,12 @@ OpenCNCPilot is a little quirky, but it does everything you need. Please start b
 
 ![home-xy](img/home-xy.png)
 
-* Consider making `G0 X0 Y0` a new macro using the **Macro** menu.
+* Consider making two macros you will use frequently using the **Macro menu**:
+  *  `G0 X0 Y0` to **Home to (0, 0)**
+    (This moves the spindle to the current home location without changing Z.)
+  * `G10 L20 P1 Z0` to **Set Z=0**
+    (This sets whatever the spindle is currently at as Z=0 without changing X, Y.)
+
 * If the machine seems to get stuck or OpenCNCPilot seems frozen, try the **Soft Reset** button before resetting the machine.
 
 ### OpenCNCPilot and Carbide Motion don't play nice
@@ -258,7 +265,7 @@ Open the **Probe** menu:
 ### Get hardware ready
 
 * Clip the magnet against the collar.
-* Clip the alligator clip on the bolt.
+* Clip the alligator clip on the copper clad.
 
 ![bitzero-rig](img/bitzero-rig2.png)
 
@@ -273,11 +280,9 @@ If the machine pauses or freezes, press the **Start** button. There are **TWO** 
 
 The mill will lower very, very slowly until it touches the surface of the copper clad. It will visit all red points. Don't worry about the order; it will eventually visit all of them.
 
-### Disconnect hardware; leave the ring terminal
+### Remove all hardware
 
-Disconnect all but the ring terminal and remove it from the work area. Close the door.
-
-**The ring terminal stays attached!** Don't touch any screws. It will invalidate the height map!
+Remove all the hardware from the CNC. Carefully remove the alligator clip without pulling on the copper clad.
 
 ### Apply HeightMap
 
@@ -291,9 +296,23 @@ If the machine pauses or freezes, press the **Start** button. There are **TWO** 
 
 ### Replacing bits and/or flipping the copper clad
 
-When you replace a bit (for example, to go from milling to drilling), you **must home again**.
+When you replace a bit (for example, to go from milling to drilling), you **must set Z again**:
 
-If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/drilling again. If you only replaced the bit and did not flip the board, you must only zero Z again.
+* Using keyboard jogging, raise the mill to a comfortable height.
+
+* Replace the bit.
+
+* Attach the rigged BitZero.
+
+* Using keyboard jogging, carefully lower the Feed from 1000 to 100 to 10 to 1 until the bit touches the copper clad and the BitZero light turns red.
+
+* Send the `G10 L20 P1 Z0` command or use your new **Set Z=0** macro. You have now re-zeroed Z.
+
+* **Load** the drilling Gcode, **Apply HeightMap** and **Start**.
+
+  
+
+If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/drilling again:
 
 * Using keyboard jogging, raise the mill to a comfortable height.
 * Replace the bit.
