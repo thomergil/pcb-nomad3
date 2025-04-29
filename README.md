@@ -156,7 +156,7 @@ Some of these values are **critically important**:
 Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**, which, confusingly, is what we're going to mill.
 
 ```bash
-# replace "decibel-metel-F_Cu.gbr" with your F_Cu file
+# replace "decibel-meter-B_Cu.gbr" with your own .B_Cu file
 # --basename is optional, but without it, the output will be "front.ngc"
 # --x-offset is needed to move the PCB to the right of the origin
 pcb2gcode --back decibel-meter-B_Cu.gbr --x-offset -72.2mm --basename db-LED --output-dir ~/save/cnc/
@@ -165,7 +165,9 @@ pcb2gcode --back decibel-meter-B_Cu.gbr --x-offset -72.2mm --basename db-LED --o
 Generate the Excelon **drill** file:
 
 ```bash
-pcb2gcode --drill decibel-meter-PTH.drl --basename db-LED --output-dir ~/save/cnc/
+# replace "decibel-meter-PTH.drl with your own .drl file
+# use the same --x-offset as above
+pcb2gcode --drill decibel-meter-PTH.drl --drill-side back --x-offset -68 --basename db-LED --output-dir ~/save/cnc/
 ```
 
 Variant 1: If you plan on a double-sided board, generate the **front** file, assuming you turn it over in the left/right direction and your PCB is centered **exactly through the middle**.
