@@ -159,7 +159,9 @@ Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**
 # replace "decibel-meter-B_Cu.gbr" with your own .B_Cu file
 # --basename is optional, but without it, the output will be "front.ngc"
 # --x-offset is needed to move the PCB to the right of the origin
-pcb2gcode --back decibel-meter-B_Cu.gbr --x-offset -72.2mm --basename db-LED --output-dir ~/save/cnc/
+# optional: --basename FOO to give file a nice prefix
+# optional: --output-dir DIR to write file to another directory
+pcb2gcode --back decibel-meter-B_Cu.gbr --x-offset -72.2mm --basename db-LED
 ```
 
 Generate the Excelon **drill** file:
@@ -167,22 +169,12 @@ Generate the Excelon **drill** file:
 ```bash
 # replace "decibel-meter-PTH.drl with your own .drl file
 # use the same --x-offset as above
-pcb2gcode --drill decibel-meter-PTH.drl --drill-side back --x-offset -68 --basename db-LED --output-dir ~/save/cnc/
+# optional: --basename FOO to give file a nice prefix
+# optional: --output-dir DIR to write file to another directory
+pcb2gcode --drill decibel-meter-PTH.drl --drill-side back --x-offset -68
 ```
 
-Variant 1: If you plan on a double-sided board, generate the **front** file, assuming you turn it over in the left/right direction and your PCB is centered **exactly through the middle**.
-
-```bash
-pcb2gcode --back decibel-meter-F_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=0
-```
-
-Variant 2: If you plan on a double-sided board, generate the **front** file, assuming you turn it over in the left/right direction while telling `pcb2code` to flip it around the center axis of a 3" copper clad (i.e, 76.2mm full width, halfway is 38.1mm):
-
-```bash
-pcb2gcode --back decibel-meter-F_Cu.gbr --basename db-LED --output-dir ~/save/cnc/ --mirror-axis=38.1
-```
-
-You should now have three `.ngc` files.
+You should now have  `.ngc` files.
 
 # Attach copper clad to jig
 
