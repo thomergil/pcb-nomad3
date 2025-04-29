@@ -258,7 +258,7 @@ Open the **Probe** menu:
 * Press **Create New**.
 * Set Grid Size to 3. (4 is not enough; 2 is probably unnecessary.)
 * Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots. Make sure you **avoid the areas where the screws are**. You will kill your mill bit.
-* Press **Apply**.
+* Press **OK**.
 
 ![probe-grid](img/probe-grid.png)
 
