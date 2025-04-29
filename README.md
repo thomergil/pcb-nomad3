@@ -140,6 +140,7 @@ zdrill=-1.7					 # Drill depth; measure your copper clad
 drill-feed=60				 # Feed rate in mm/minute
 drill-speed=10000    # RPM for drilling
 nog81=1              # Use G0/G1 instead of G81/G80
+onedrill=1					 # Use only one drill; don't swap sizes
 
 # this will mess up offset! don't use!
 # zero-start=true
@@ -315,8 +316,6 @@ When you replace a bit (for example, to go from milling to drilling), you **must
 * **Load** the drilling Gcode
 
 * **Apply HeightMap**
-
-* **Start**; my drill file pauses at least 2-3 times, and I need to press **Start** to continue
 
   
 
