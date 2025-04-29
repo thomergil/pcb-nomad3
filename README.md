@@ -257,7 +257,7 @@ Open the **Probe** menu:
 * If necessary, press **Clear**.
 * Press **Create New**.
 * Set Grid Size to 3. (4 is not enough; 2 is probably unnecessary.)
-* Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots. Make sure you **avoid the areas where the screws are**. You will kill your mill bit.
+* Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots.
 * Press **OK**.
 
 ![probe-grid](img/probe-grid.png)
@@ -329,5 +329,5 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 * Press the **Zero (G91)** key and **Send**.
 
 * Raise the mill back to a comfortable height.
-* Remove the rigged BitZero, but leave the ring terminal; do not touch the screws.
+* Remove the rigged BitZero.
 * If you flipped the board, you must plot again before milling or drilling.
