@@ -162,7 +162,7 @@ Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**
 # --x-offset is needed to move the PCB to the right of the origin
 # optional: --basename FOO to give file a nice prefix
 # optional: --output-dir DIR to write file to another directory
-pcb2gcode --back decibel-meter-B_Cu.gbr --x-offset -72.2mm --basename db-LED
+pcb2gcode --back decibel-meter-B_Cu.gbr --x-offset -68
 ```
 
 Generate the Excelon **drill** file:
