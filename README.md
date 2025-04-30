@@ -76,7 +76,12 @@ If you initially designed your board for manufacturing (e.g., JLCPCB, PCBWay, OS
 
 To adapt the design for CNC manufacturing, you need to move all routing (including GND) to F.Cu. Since GND is no longer taken care of, this likely requires re-routing traces.
 
-While you are at it, you need to also make the tracks wider: using **File** → **Board Setup** → **Design Rules** → **Net Classes** set track width to a **minimum 0.5mm**. If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors due to the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
+While you are at it, you need to also make the tracks wider and clearance wider: using **File** → **Board Setup** → **Design Rules** → **Net Classes**:
+
+* set **track width to a minimum 0.5mm**
+* set **clearance to 0.58mm**, which is the maximum without things getting buggy.
+
+If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors due to the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
 
 Once everything is on F.Cu, you can swap F.Cu and B.Cu (using menu **Edit** → **Swap Layers...**) to transpose F.Cu to the back. Alternatively, if you are not planning to use a PCB manufacturing service, you can do all routing on B.Cu from the start.
 
@@ -128,7 +133,7 @@ metric=true
 metricoutput=true
 
 # milling
-zwork=-0.05          # Depth in mm,
+zwork=-0.06          # Depth in mm. I've been lucky with -0.06mm.
 zsafe=20             # Height for movements; can be as low as 2mm if you are confident
 zchange=35           # Height for tool changes
 mill-feed=100        # Feed rate in mm/minute
@@ -137,6 +142,11 @@ nom6=1               # Don't issue M6 command
 spinup-time=3.0      # Time to spin up the spindle in seconds
 spindown-time=3.0    # Time to spin up the spindle in seconds
 backtrack=0          # Don't criss-cross copper; always travel at zsafe
+isolation-width=0.58 # As thick isolation as possible without running into trouble
+milling-overlap=75%  # Re-mill with 75% overlap as part of creating isolation width
+
+# Voronoi regions
+# voronoi=1					 # Try it out! Makes it easier to solder, but looks funky; default 0
 
 # drilling
 zdrill=-1.7					 # Drill depth; measure your copper clad
@@ -156,6 +166,7 @@ Some of these values are **critically important**:
 * `zwork` is how deep the mill drills into the copper substrate; start with `0.5` (for a 30º Vbit) or `0.05` and iterate deeper as needed; this also depends on the V-bit you are using.
 * `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3.
 * `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
+* For `--mill-diameters` you can use this [tool cutting width calculator](https://hobbycnc.com/tool-width-calculator/) to figure out the correct number.
 
 Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**, which, confusingly, is what we're going to mill.
 
@@ -163,9 +174,10 @@ Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**
 # replace "decibel-meter-B_Cu.gbr" with your own .B_Cu file
 # --basename is optional, but without it, the output will be "front.ngc"
 # --x-offset is needed to move the PCB to the right of the origin
+# --mill-diameters: the width of your mill at the given zwork
 # optional: --basename FOO to give file a nice prefix
 # optional: --output-dir DIR to write file to another directory
-pcb2gcode --back decibel-meter-B_Cu.gbr --x-offset -68
+pcb2gcode --back decibel-meter-B_Cu.gbr --mill-diameters=0.169 --x-offset -68
 ```
 
 Generate the Excelon **drill** file:
