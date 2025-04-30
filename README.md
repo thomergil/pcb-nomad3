@@ -32,7 +32,7 @@ You'll likely start with your entire PCB on one side but are soldering pins on t
 
 30º V-bits:
 
-* [#501 PCB Engraver (30º) bits from Carbide 3D](https://shop.carbide3d.com/products/501-engraving-bit?_pos=3&_psq=pcb&_ss=e&_v=1.0) 
+* [#501 PCB Engraver (30º) bits from Carbide 3D](https://shop.carbide3d.com/products/501-engraving-bit?_pos=3&_psq=pcb&_ss=e&_v=1.0)
 * [Coated 30º V-Groove bits from bits&bits](https://bitsbits.com/product/60-degree-v-groove/)
 * [FoxAlien 30º bits via Amazon](https://a.co/d/37hDOj5)
 
@@ -51,7 +51,7 @@ I provide [several different-sized jigs on printables.com](https://www.printable
 
 # BitZero attachment
 
-You need to rig the [BitZero V2](https://shop.carbide3d.com/products/bitzero-v2-for-nomad-3). Anything works as long as it conducts ground between the top of the copper clad and the BitZero. This is my solution: 
+You need to rig the [BitZero V2](https://shop.carbide3d.com/products/bitzero-v2-for-nomad-3). Anything works as long as it conducts ground between the top of the copper clad and the BitZero. This is my solution:
 
 ![bitzero-rig](img/bitzero-rig1.png)
 
@@ -151,10 +151,10 @@ onedrill=1					 # Use only one drill; don't swap sizes
 
 Some of these values are **critically important**:
 
-* `zsafe` is the travel height of the mill bit; **if this is too low your bit will crash into the jig, breaking the mill or worse**. Once you get the hang of it, you can make this as low as 2. 
+* `zsafe` is the travel height of the mill bit; **if this is too low your bit will crash into the jig, breaking the mill or worse**. Once you get the hang of it, you can make this as low as 2.
 * `zchange` is the height for changing the mill bit; if you choose this number too high and your drill bit is long, the process will error out, because it runs into the hard limit of the machine.
 * `zwork` is how deep the mill drills into the copper substrate; start with `0.5` (for a 30º Vbit) or `0.05` and iterate deeper as needed; this also depends on the V-bit you are using.
-* `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3. 
+* `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3.
 * `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
 
 Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**, which, confusingly, is what we're going to mill.
@@ -198,7 +198,7 @@ OpenCNCPilot is a little quirky, but it does everything you need. Please start b
 
 * As you learn to use OpenCNCPilot, **stay close to your CNC machine with your finger on the power switch**.
 * There is not enough vertical space in the user interface to fold open all menus, so you need to manage them. You'll use **File**, and **Edit**, and **Probing**, and **Manual**, and **Manual Probing**. I try to only ever open one at a time and close the ones I don't use.
-* You can reposition the view with the middle mouse button if you have three mouse positions. If you don't, you can zoom in and zoom out with the right mouse button and use it to "direct" the view. Under the **Debug** menu (on the right) you can **Lay flat 3D Viewport** and **Restore Viewport**.
+* You can reposition the view by double-clicking the right mouse button. You can rotate and pitch the view by dragging the view with the right mouse button. You can zoom in and out with the mouse wheel (or whatever equivalent trackpad gesture you have). Also, under the **Debug** menu (on the right) you can **Lay flat 3D Viewport** and **Restore Viewport**.
 
 ![viewport](img/viewport.png)
 
@@ -260,7 +260,8 @@ Open the **Probe** menu:
 * If necessary, press **Clear**.
 * Press **Create New**.
 * Set Grid Size to 3. (4 is not enough; 2 is probably unnecessary.)
-* Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots.
+* Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots. You should add at least a margin 2mm around your PCB.
+* **Hint:** if you are concerned about probing past the edge of the copper clad, you can manually jog the mill to the edge: the user interface will show you (through the blue virtual mill) where you are. You can arrange the red dots accordingly, ensuring you always stay on the copper clad.
 * Press **OK**.
 
 ![probe-grid](img/probe-grid.png)
@@ -320,7 +321,7 @@ When you replace a bit (for example, to go from milling to drilling), you **must
 
 * **Apply HeightMap**
 
-  
+* **Start**
 
 If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/drilling again:
 
