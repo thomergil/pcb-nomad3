@@ -257,7 +257,7 @@ If you need to re-home or reset the machine, you can verify that X and Y are sti
 
 ### Raise the bit to a comfortable height
 
-Set **Feed** to 1000 and raise the bit. Center it roughly above the copper clad.
+Set **Feed** to 5000 and raise the bit. Center it roughly above the copper clad.
 
 ### Ensure Manual Probe offsets are zero
 
@@ -325,7 +325,7 @@ When you replace a bit (for example, to go from milling to drilling), you **must
 
 * Attach the rigged BitZero.
 
-* Using keyboard jogging, carefully lower the Feed from 1000 to 100 to 10 to 1 until the bit touches the copper clad and the BitZero light turns red.
+* Using keyboard jogging, carefully lower the Feed from 5000 to 500 to 50 to 10 until the bit touches the copper clad and the BitZero light turns red.
 
 * Send the `G10 L20 P1 Z0` command or use your new **Set Z=0** macro. You have now re-zeroed Z.
 
@@ -341,7 +341,7 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 * Replace the bit.
 * Attach the rigged BitZero.
 * Issue the `G0 X0 Y0` command, which places you over your current X, Y home.
-* Using keyboard jogging, carefully lower the Feed from 1000 to 100 to 10 to 1 until the BitZero light turns red. (If you flipped the board, you must also use left, right, up, and down to (re)place the bit over the bottom left corner.)
+* Using keyboard jogging, carefully lower the Feed from 5000 to 500 to 50 to 10 until the BitZero light turns red. (If you flipped the board, you must also use left, right, up, and down to (re)place the bit over the bottom left corner.)
 * Press the **Zero (G91)** key and **Send**.
 
 * Raise the mill back to a comfortable height.
