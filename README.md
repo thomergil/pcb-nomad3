@@ -369,3 +369,5 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 * Use the finest soldering tip.
 * Use very thin (lead-based) flux core solder.
 * Solder the pins to the copper pads; use as little solder as possible.
+
+![soldered](img/soldered.png)
