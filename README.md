@@ -258,13 +258,13 @@ In the **Manual** menu, :heavy_check_mark: the **Enable Keyboard Jogging**, and 
 
 ![jogging](img/jogging.png)
 
-Make sure you get exactly to the bottom left corner in terms of X and Y, but don't worry about the right Z. You can stay slightly above the surface. Try to get it within 1mm. We will take care of Z later.
+Make sure you get exactly to the bottom left corner in terms of X and Y, but don't worry about the right Z. I look at the bit with one eye, both from the front and from the side window, to ensure it's correctly aligned with the corner. You can stay slightly above the surface. Try to get it within 1mm. We will take care of Z below.
 
 ![zero](img/zero.png)
 
 Once the mill is positioned correctly, press the **Zero (G10)** button and then **Send** it to the machine.
 
-If you need to re-home or reset the machine, you can verify that X and Y are still correct by sending `G0 X0 Y0` to the machine using the **Manual** menu. Make sure the mill is high enough when you do!
+If you need to re-home or reset the machine, you can verify that X and Y are still correct by sending `G0 X0 Y0` (or your **Home to (0, 0)** macro) to the machine using the **Manual** menu. Make sure the mill is high enough when you do!
 
 ### Raise the bit to a comfortable height
 
@@ -338,7 +338,7 @@ When you replace a bit (for example, to go from milling to drilling), you **must
 
 * Using keyboard jogging, carefully lower the Feed from 5000 to 500 to 50 to 10 until the bit touches the copper clad and the BitZero light turns red.
 
-* Send the `G10 L20 P1 Z0` command or use your new **Set Z=0** macro. You have now re-zeroed Z.
+* Send the `G10 L20 P1 Z0` command or use the **Set Z=0** macro you created. You have now re-zeroed Z.
 
 * **Load** the drilling Gcode
 
@@ -351,10 +351,13 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 * Using keyboard jogging, raise the mill to a comfortable height.
 * Replace the bit.
 * Attach the rigged BitZero.
-* Issue the `G0 X0 Y0` command, which places you over your current X, Y home.
-* Using keyboard jogging, carefully lower the Feed from 5000 to 500 to 50 to 10 until the BitZero light turns red. (If you flipped the board, you must also use left, right, up, and down to (re)place the bit over the bottom left corner.)
-* Press the **Zero (G91)** key and **Send**.
+* If you only exchanged a drill:
+  * Using keyboard jogging, move the drill anywhere over the board, then carefully lower the drill bit (while decreasing the Feed from 5000 to 500 to 50 to 10 as you do this) until the BitZero turns red.
+  * Apply the **Set Z=0** in the Macro menu.
 
+* If you (also) flipped the board:
+  * You need to re-home X, Y, and Z using the same instructions as above.
+  * Press the **Zero (G91)** key and **Send**.
 * Raise the mill back to a comfortable height.
 * Remove the rigged BitZero.
 * If you flipped the board, you must plot again before milling or drilling.
