@@ -32,7 +32,7 @@ I use 2x3" and 4x6" PCB blanks that I order [from Carbide 3D](https://shop.carbi
 
 You'll likely start with your entire PCB on one (the non-copper) side and soldering the pins on the copper side, so **you need single-sided copper clad**.
 
-If you are planning to put, say, the ground plane on the opposide side, you will need **double-sided copper clad**.
+If you are planning to put, say, the ground plane on the opposite side, you will need **double-sided copper clad**.
 
 Keep in mind that plugging in pins through double-sided copper clad, will connect the pins on **both sides of the board, even if you only solder one side**. The edges of the pin will very likely make contact with the copper. I learned this the hard way. 💥
 
