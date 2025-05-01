@@ -94,8 +94,8 @@ To adapt the design for CNC manufacturing, you need to move all routing (includi
 
 While you are at it, you need to also make the tracks wider and clearance wider: using **File** → **Board Setup** → **Design Rules** → **Net Classes**:
 
-* set **track width to a minimum 0.5mm**
-* set **clearance to 0.58mm**, which is the maximum without things getting buggy.
+* Set **track width to a minimum 0.5mm**.
+* Set **clearance to 0.58mm**, the maximum without things getting buggy.
 
 If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors due to the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
 
@@ -106,7 +106,7 @@ Once everything is on F.Cu, you can swap F.Cu and B.Cu (using menu **Edit** → 
 A few things to keep in mind when exporting from KiCad's PCB editor:
 
 * Make the Edge Cut layer match exactly the dimensions of the PCB blank.
-* Ensure a enough space (I recommend at least 2mm) between the edges and the circuitry.
+* Ensure enough space (at least 2mm) between the edges and the circuitry.
 * Using menu **Place** → **Place Drill/Place File Origin**, place the origin at the bottom left of the Edge Cut layer.
 * Similarly, using menu **Place** → **Grid Origin**, place the origin at the bottom left of the Edge Cut layer.
 
