@@ -162,7 +162,7 @@ isolation-width=0.58 # As thick isolation as possible without running into troub
 milling-overlap=75%  # Re-mill with 75% overlap as part of creating isolation width
 
 # Voronoi regions
-# voronoi=1					 # Try it out! Makes it easier to solder, but looks funky; default 0
+voronoi=1					   # Try it out! Makes soldering easier, but looks funky; default 0
 
 # drilling
 zdrill=-1.7					 # Drill depth; measure your copper clad
