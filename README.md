@@ -236,7 +236,7 @@ OpenCNCPilot is a little quirky, but it does everything you need. Please start b
   * `G10 L20 P1 Z0` to **Set Z=0**
     (This sets whatever the spindle is currently at as Z=0 without changing X, Y.)
 
-* If the machine gets stuck or OpenCNCPilot seems frozen, try the **Soft Reset** button before resetting the machine. Also: you forgot the magnet on the door.
+* If the machine gets stuck or OpenCNCPilot seems frozen, try the **Soft Reset** button before resetting the machine. Also: you forgot the magnet on the door sensor. 🙂
 
 ### OpenCNCPilot and Carbide Motion don't play nice
 
