@@ -79,8 +79,8 @@ The BitZero is squeezed on both sides by two metal rings, held in place by a bol
 * Replace V-bit with a drill bit (for example, a 0.8mm PCB drill).
 * Zero Z.
 * Drill holes.
-* Prepare soldering.
-* Soldering.
+* Prepare to solder.
+* Solder.
 
 If you are milling both sides, you should **drill after milling both sides**; otherwise, you are level-probing a surface with holes.
 
