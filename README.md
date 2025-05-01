@@ -34,7 +34,7 @@ You'll likely start with your entire PCB on one (the non-copper) side and solder
 
 If you are planning to put, say, the ground plane on the opposite side, you will need **double-sided copper clad**.
 
-Keep in mind that plugging in pins through double-sided copper clad, will connect the pins on **both sides of the board, even if you only solder one side**. The edges of the pin will very likely make contact with the copper. I learned this the hard way. 💥
+Keep in mind that plugging in pins through double-sided copper clad will connect the pins on **both sides of the board, even if you only solder one side**. The edges of the pin will very likely make contact with the copper. I learned this the hard way. 💥
 
 # Drill/Mill bits
 
