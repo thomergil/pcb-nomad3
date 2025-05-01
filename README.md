@@ -71,8 +71,13 @@ The BitZero is squeezed on both sides by two metal rings, held in place by a bol
 
 * Adjust the PCB design.
 * Export Gerber files.
-* Mill front.
+* Attach copper to the jig with double-sided tape.
+* Zero X, Y, Z.
+* Probe to create a height map. This can take 15-30 minutes, depending.
+* Mill front (for example, using a 30º V-bit). This can take 2-6 hours, depending.
 * [Optional: flip, mill other side, flip back]
+* Replace V-bit with a drill bit (for example, a 0.8mm PCB drill).
+* Zero Z.
 * Drill holes.
 * Prepare soldering.
 * Soldering.
