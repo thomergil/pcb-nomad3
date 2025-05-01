@@ -68,7 +68,10 @@ The BitZero is squeezed on both sides by two metal rings, held in place by a bol
 * Adjust the PCB design.
 * Export Gerber files.
 * Mill front.
+* [Optional: flip, mill other side, flip back]
 * Drill holes.
+* Prepare soldering.
+* Soldering.
 
 If you are milling both sides, you should **drill after milling both sides**; otherwise, you are level-probing a surface with holes.
 
@@ -351,3 +354,14 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 * Raise the mill back to a comfortable height.
 * Remove the rigged BitZero.
 * If you flipped the board, you must plot again before milling or drilling.
+
+# Soldering
+
+* Sand the copper surface with 600+ grit sandpaper or 0000 steel wool. Sand in **one direction only**; do not brush in circles.
+* Clean the surface with isopropyl alcohol.
+* Stick the pin headers or components through the holes.
+* Dab the tips and copper with a flux pen. Don't worry about flux being absorbed by the fiberglass.
+* Use magnifying glasses.
+* Use the finest soldering tip.
+* Use very thin (lead-based) solder with a flux core.
+* Solder the pins to the copper pads.
