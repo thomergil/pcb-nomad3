@@ -363,5 +363,5 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 * Dab the tips and copper with a flux pen. Don't worry about flux being absorbed by the fiberglass.
 * Use magnifying glasses.
 * Use the finest soldering tip.
-* Use very thin (lead-based) solder with a flux core.
-* Solder the pins to the copper pads.
+* Use very thin (lead-based) flux core solder.
+* Solder the pins to the copper pads; use as little solder as possible.
