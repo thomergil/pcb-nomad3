@@ -358,16 +358,11 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 * Using keyboard jogging, raise the mill to a comfortable height.
 * Replace the bit.
 * Attach the rigged BitZero.
-* If you only exchanged a drill:
-  * Using keyboard jogging, move the drill anywhere over the board, then carefully lower the drill bit (while decreasing the Feed from 5000 to 500 to 50 to 10 as you do this) until the BitZero turns red.
-  * Apply the **Set Z=0** in the Macro menu.
-
-* If you (also) flipped the board:
-  * You need to re-home X, Y, and Z using the same instructions as above.
-  * Press the **Zero (G91)** key and **Send**.
+* Using keyboard jogging, move the drill anywhere over the board, then carefully lower the drill bit (while decreasing the Feed from 5000 to 500 to 50 to 10 as you do this) until the BitZero turns red.
+* Press the **Zero (G91)** key and **Send**.
 * Raise the mill back to a comfortable height.
 * Remove the rigged BitZero.
-* If you flipped the board, you must plot again before milling or drilling.
+* If you flipped the board, you must plot a height map again before milling or drilling and **Apply HeightMap** to the drill file.
 
 # Soldering
 
