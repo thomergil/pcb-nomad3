@@ -94,10 +94,17 @@ If you initially designed your board for manufacturing (e.g., JLCPCB, PCBWay, OS
 
 To adapt the design for CNC manufacturing, you need to move all routing (including GND) to F.Cu. Since GND is no longer taken care of, this likely requires re-routing traces.
 
-While you are at it, you need to also make the tracks wider and clearance wider: using **File** → **Board Setup** → **Design Rules** → **Net Classes**:
+While you are at it, you need to also make the tracks wider and clearance wider:
 
-* Set **track width to a minimum 0.5mm**.
-* Set **clearance to 0.58mm**, the maximum without things getting buggy. (I find that sometimes I have to set it to 0.34mm to avoid neighboring pins/vias from interfering.)
+* Using **File** → **Board Setup** → **Board Stackup** → **Physical Stackup**
+  * Set **Copper layers** to 2 using the drop-down at the top of the window. 
+
+* Using **File** → **Board Setup** → **Design Rules** → **Net Classes**:
+
+  * Set **track width to a minimum of 0.5mm** for all netclasses; I go up to 1mm for higher-voltage classes.
+
+  * Set **clearance to 0.34mm** for all netclasses, the maximum without things getting buggy.
+
 
 If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors due to the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
 
