@@ -193,11 +193,10 @@ Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**
 
 ```bash
 # replace "decibel-meter-B_Cu.gbr" with your own .B_Cu file
-# --basename is optional, but without it, the output will be "front.ngc"
-# --mill-diameters: the width of your mill at the given zwork
 # optional: --basename FOO to give file a nice prefix
 # optional: --output-dir DIR to write file to another directory
-# optional: --x-offset (negative number) to move the PCB to the right of the origin
+# optional: --x-offset negative number moves the PCB to the right of the origin
+# --mill-diameters: the width of your mill at the given zwork
 pcb2gcode --back decibel-meter-B_Cu.gbr --mill-diameters=0.169
 ```
 
@@ -205,10 +204,11 @@ Generate the Excelon **drill** file:
 
 ```bash
 # replace "decibel-meter-PTH.drl with your own .drl file
-# use the same --x-offset as above
 # optional: --basename FOO to give file a nice prefix
 # optional: --output-dir DIR to write file to another directory
-pcb2gcode --drill decibel-meter-PTH.drl --drill-side back --x-offset -68
+# optional: --x-offset negative number moves the PCB to the right of the origin
+#           MAKE SURE THIS IS THE SAME AS THE SETTING FOR B_Cu ABOVE
+pcb2gcode --drill decibel-meter-PTH.drl --drill-side back
 ```
 
 You should now have  `.ngc` files.
