@@ -2,7 +2,7 @@
 
 I tried everything between [Carbide Copper](https://carbide3d.com/copper/), which seems abandoned at best and buggy at worst: it does not seem to spin the spindle. I played with [FlatCAM](http://flatcam.org/) and [bCNC](https://github.com/vlachoudis/bCNC), which I used to brick my Nomad 3. (I provide [instructions to reset the GRBL on a Nomad 3](https://github.com/thomergil/carbide3d-grbl-recovery?tab=readme-ov-file), much thanks to Carbide 3D support.)
 
-Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) and [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot), which supports auto-leveling. Unfortunately–I typically use Mac and Linux–**OpenCNCPilot only works on Windows**. Annoying as that may be, it might be worth the sacrifice, in this case. You can operate your Nomad 3 fully using Windows.
+Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) and [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot), which supports auto-leveling. Unfortunately—I typically use Mac and Linux—**OpenCNCPilot only works on Windows**. Annoying as that may be, it might be worth the sacrifice, in this case. You can operate your Nomad 3 fully using Windows.
 
 # Example results
 
@@ -159,12 +159,9 @@ mill-speed=12000     # RPM for milling
 nom6=1               # Don't issue M6 command
 spinup-time=3.0      # Time to spin up the spindle in seconds
 spindown-time=3.0    # Time to spin up the spindle in seconds
-backtrack=0          # See https://github.com/pcb2gcode/pcb2gcode/issues/706 for a
+backtrack=1          # See https://github.com/pcb2gcode/pcb2gcode/issues/706
                      # Turn off if you don't like the esthetics of criss-cross lines
-
-isolation-width=0.34 # As thick isolation as possible without running into trouble
-                     # This number needs to match your KiCad setting!
-
+isolation-width=0.6  # Creates thicker grooves; eases soldering.
 milling-overlap=25%  # Re-mill with 25% overlap as part of creating isolation width
                      # See https://github.com/pcb2gcode/pcb2gcode/issues/706 for a
                      # discussion about consequences of milling-overlap that's too high.
@@ -188,7 +185,6 @@ Some of these values are **critically important**:
 * `zsafe` is the travel height of the mill bit; **if this is too low your bit will crash into the jig, breaking the mill or worse**. Once you get the hang of it, you can make this as low as 2.
 * `zchange` is the height for changing the mill bit; if you choose this number too high and your drill bit is long, the process will error out, because it runs into the hard limit of the machine.
 * `zwork` is how deep the mill drills into the copper substrate; start with `0.5` (for a 30º Vbit) or `0.05` and iterate deeper as needed; this also depends on the V-bit you are using.
-* `isolation-width` needs to match the isolation number you picked in KiCad. (I typically use 0.58mm if I can get away with it; 0.34mm otherwise.)
 * `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3.
 * `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
 * For `--mill-diameters` you can use this [tool cutting width calculator](https://hobbycnc.com/tool-width-calculator/) to figure out the correct number.
@@ -298,7 +294,7 @@ Open the **Probe** menu:
 * Press **Create New**.
 * Set Grid Size to 3. (4 is not enough; 2 is probably unnecessary.)
 * Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots. You should add at least a margin 2mm around your PCB.
-* **Hint:** if you are concerned about probing past the edge of the copper clad, you can manually jog the mill to the edge: the user interface will show you (through the blue virtual mill) where you are. You can arrange the red dots accordingly, ensuring you always stay on the copper clad.
+* **Hint:** If you are concerned about probing past the edge of the copper clad—trust me, this will happen to you too, and you'll break your drill bit—you should manually jog the mill to the edge. The user interface will show you (through the blue virtual mill) where you are. You can arrange the red dots accordingly, ensuring you always stay on the copper clad.
 * Press **OK**.
 
 ![probe-grid](img/probe-grid.png)
