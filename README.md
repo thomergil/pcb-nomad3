@@ -97,7 +97,7 @@ To adapt the design for CNC manufacturing, you need to move all routing (includi
 While you are at it, you need to also make the tracks wider and clearance wider: using **File** → **Board Setup** → **Design Rules** → **Net Classes**:
 
 * Set **track width to a minimum 0.5mm**.
-* Set **clearance to 0.58mm**, the maximum without things getting buggy.
+* Set **clearance to 0.58mm**, the maximum without things getting buggy. (I find that sometimes I have to set it to 0.34mm to avoid neighboring pins/vias from interfering.)
 
 If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors due to the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
 
@@ -159,9 +159,15 @@ mill-speed=12000     # RPM for milling
 nom6=1               # Don't issue M6 command
 spinup-time=3.0      # Time to spin up the spindle in seconds
 spindown-time=3.0    # Time to spin up the spindle in seconds
-backtrack=0          # Don't criss-cross copper; always travel at zsafe
-isolation-width=0.58 # As thick isolation as possible without running into trouble
-milling-overlap=75%  # Re-mill with 75% overlap as part of creating isolation width
+backtrack=0          # See https://github.com/pcb2gcode/pcb2gcode/issues/706 for a
+                     # Turn off if you don't like the esthetics of criss-cross lines
+
+isolation-width=0.34 # As thick isolation as possible without running into trouble
+                     # This number needs to match your KiCad setting!
+
+milling-overlap=25%  # Re-mill with 25% overlap as part of creating isolation width
+                     # See https://github.com/pcb2gcode/pcb2gcode/issues/706 for a
+                     # discussion about consequences of milling-overlap that's too high.
 
 # Voronoi regions
 voronoi=1            # Try it out! Makes soldering easier, but looks funky; default 0
@@ -182,6 +188,7 @@ Some of these values are **critically important**:
 * `zsafe` is the travel height of the mill bit; **if this is too low your bit will crash into the jig, breaking the mill or worse**. Once you get the hang of it, you can make this as low as 2.
 * `zchange` is the height for changing the mill bit; if you choose this number too high and your drill bit is long, the process will error out, because it runs into the hard limit of the machine.
 * `zwork` is how deep the mill drills into the copper substrate; start with `0.5` (for a 30º Vbit) or `0.05` and iterate deeper as needed; this also depends on the V-bit you are using.
+* `isolation-width` needs to match the isolation number you picked in KiCad. (I typically use 0.58mm if I can get away with it; 0.34mm otherwise.)
 * `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3.
 * `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
 * For `--mill-diameters` you can use this [tool cutting width calculator](https://hobbycnc.com/tool-width-calculator/) to figure out the correct number.
@@ -191,11 +198,11 @@ Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**
 ```bash
 # replace "decibel-meter-B_Cu.gbr" with your own .B_Cu file
 # --basename is optional, but without it, the output will be "front.ngc"
-# --x-offset is needed to move the PCB to the right of the origin
 # --mill-diameters: the width of your mill at the given zwork
 # optional: --basename FOO to give file a nice prefix
 # optional: --output-dir DIR to write file to another directory
-pcb2gcode --back decibel-meter-B_Cu.gbr --mill-diameters=0.169 --x-offset -68
+# optional: --x-offset (negative number) to move the PCB to the right of the origin
+pcb2gcode --back decibel-meter-B_Cu.gbr --mill-diameters=0.169
 ```
 
 Generate the Excelon **drill** file:
@@ -230,7 +237,7 @@ OpenCNCPilot is a little quirky, but it does everything you need. Please start b
 * There is not enough vertical space in the user interface to fold open all menus, so you need to manage them. You'll use **File**, and **Edit**, and **Probing**, and **Manual**, and **Manual Probing**. I try to only ever open one at a time and close the ones I don't use.
 * You can reposition the view by double-clicking the right mouse button. You can rotate and pitch the view by dragging the view with the right mouse button. You can zoom in and out with the mouse wheel (or whatever equivalent trackpad gesture you have). Also, under the **Debug** menu (on the right) you can **Lay flat 3D Viewport** and **Restore Viewport**.
 
-![viewport](img/viewport.png)
+![viewport](img/viewport.png)Ho
 
 * While learning OpenCNCPilot, I destroyed a half-dozen mill bits. I suggest you **start with cheap throwaway bits** while you're learning.
 * You can home to (X = 0, Y = 0) without changing height by typing `G0 X0 Y0` in the field under the **Manual** menu and then pressing **Send**. Make sure the bit is at a safe height.
