@@ -159,7 +159,8 @@ metricoutput=true
 
 # milling
 zwork=-0.06          # Depth in mm. I've been lucky with -0.06mm.
-zsafe=20             # Height for movements; can be as low as 2mm if you are confident
+zsafe=20             # Height for movements; slower, safer, see if all is going well
+# zsafe=2            # Height for movements; faster, if you are confident
 zchange=35           # Height for tool changes
 mill-feed=100        # Feed rate in mm/minute
 mill-speed=12000     # RPM for milling
