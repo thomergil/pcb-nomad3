@@ -195,7 +195,7 @@ cut-feed=100         # Feed rate for outline cutting; same as milling
 cut-vertfeed=60      # Vertical feed rate; similar to drill-feed
 cut-speed=12000      # RPM for cutting; same as mill-speed
 cutter-diameter=1.0  # Diameter of end mill for cutting (in mm)
-bridgesnum=4         # No bridges. It's stuck with tape.
+bridgesnum=0         # No bridges. It's stuck with tape.
 cut-infeed=0.6       # Max cutting depth per pass
 
 # this will mess up offset! don't use!
