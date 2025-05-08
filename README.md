@@ -65,7 +65,7 @@ You need to rig the [BitZero V2](https://shop.carbide3d.com/products/bitzero-v2-
 
 ![bitzero-rig](img/bitzero-rig1.png)
 
-The BitZero is squeezed on both sides by two metal rings, held in place by a bolt and screw; an alligator clip attaches to the bolt. The alligator clip connects to an alligator clip that attaches to the copper clad.
+The BitZero is squeezed on both sides by two metal rings, held in place by a bolt and screw; an alligator clip attaches to the bolt. The alligator clip connects to an alligator clip that attaches to the copper clad. Make sure to place the BitZero on **something non-conductive**.
 
 ![bitzero-rig](img/bitzero-rig2.png)
 
@@ -112,7 +112,7 @@ Once everything is on F.Cu, you can swap F.Cu and B.Cu (using menu **Edit** → 
 
 # Stating the obvious: check your PCB
 
-This is obvious, but my most frequent mistakes are incorrect rotation of pin headers and misalignment of pins. Hold the parts you will use to the screen. It sounds silly, but holding them next to each other is a great way to find bugs. Check pin assignments. Use a measuring tool in KiCad to check distances between pins (typically multiples of 2.54mm) and alignment. Measure the distance between the physical pins with a caliper to verify your PCB design.
+This is obvious, but my most frequent mistakes are incorrect rotation of pin headers and misalignment of pins. Hold the parts you will use to the screen. It sounds silly, but holding them next to each other is a great way to find bugs. Check pin assignments. Use a measuring tool in KiCad to check distances between pins (typically multiples of 2.54mm) and alignment. Measure the distance between the physical pins with a caliper to verify your PCB design. And, of course, **Run DRC** and fix all Violations and Unconnected items.
 
 # KiCad PCB Export
 
@@ -305,7 +305,7 @@ Open the **Probe** menu:
 * If necessary, press **Clear**.
 * Press **Create New**.
 * Set Grid Size to 3 or 4. (5 is not enough; 2 is probably unnecessary.)
-* Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots. You should add at least a margin 2mm around your PCB.
+* Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots, including the square/rectangle cutout lines, which are going to be etched, also. You should add at least a margin 2mm around your PCB.
 * **Hint:** If you are concerned about probing past the edge of the copper clad—trust me, this will happen to you too, and you'll break your drill bit—you should manually jog the mill to the edge. The user interface will show you (through the blue virtual mill) where you are. You can arrange the red dots accordingly, ensuring you always stay on the copper clad.
 * Press **OK**.
 
