@@ -241,7 +241,7 @@ Generate the **outline** file:
 # optional: --output-dir DIR to write file to another directory
 # optional: --x-offset negative number moves the PCB to the right of the origin
 #           MAKE SURE THIS IS THE SAME AS THE SETTING FOR B_Cu ABOVE
-pcb2gcode --outline decibel-meter-Edge_Cuts.gbr --drill-side back
+pcb2gcode --outline decibel-meter-Edge_Cuts.gbr --cut-side back
 ```
 
 You should now have  `.ngc` files.
