@@ -14,7 +14,7 @@ Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) and
 
 # Video (will navigate you away)
 
-[![Probing](https://vumbnail.com/1082581671:7f1daaed23.jpg)](https://vimeo.com/1082581671/7f1daaed23)
+[![Probing](https://i.vimeocdn.com/video/2013607118-9fc4a02db7518d01f925ba14414123810e4957ef4db92fbcecfbd047de1c41eb-d_1280x720?&r=pad&region=us)](https://vimeo.com/1082581671/7f1daaed23)
 
 # Acknowledgements
 
