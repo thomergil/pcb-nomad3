@@ -188,6 +188,16 @@ drill-speed=10000    # RPM for drilling
 nog81=1              # Use G0/G1 instead of G81/G80
 onedrill=1           # Use only one drill; don't swap sizes
 
+# outline cutting
+zcut=-1.7            # Cut depth for outline; same as drill depth
+cut-feed=100         # Feed rate for outline cutting; same as milling
+cut-vertfeed=60      # Vertical feed rate; similar to drill-feed
+cut-speed=12000      # RPM for cutting; same as mill-speed
+cutter-diameter=1.0  # Diameter of end mill for cutting (in mm)
+bridges=1.0          # Width of bridges in mm to hold the PCB in place
+bridgesnum=4         # Number of bridges around the perimeter
+cut-infeed=0.6       # Max cutting depth per pass
+
 # this will mess up offset! don't use!
 # zero-start=true
 ```
@@ -221,6 +231,17 @@ Generate the Excelon **drill** file:
 # optional: --x-offset negative number moves the PCB to the right of the origin
 #           MAKE SURE THIS IS THE SAME AS THE SETTING FOR B_Cu ABOVE
 pcb2gcode --drill decibel-meter-PTH.drl --drill-side back
+```
+
+Generate the **outline** file:
+
+```bash
+# replace "decibel-meter-PTH.drl with your own .drl file
+# optional: --basename FOO to give file a nice prefix
+# optional: --output-dir DIR to write file to another directory
+# optional: --x-offset negative number moves the PCB to the right of the origin
+#           MAKE SURE THIS IS THE SAME AS THE SETTING FOR B_Cu ABOVE
+pcb2gcode --outline decibel-meter-Edge_Cuts.gbr --drill-side back
 ```
 
 You should now have  `.ngc` files.
@@ -348,7 +369,7 @@ Under **File**, press **Start**.
 
 If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu; at other times, you need to use the one at the top of the user interface. (I am [confused about this](https://github.com/martin2250/OpenCNCPilot/issues/200).)
 
-### Replacing bits for drilling and/or flipping the copper clad
+### Replacing bits for drilling, outline, and/or flipping the copper clad
 
 When you replace a bit (for example, to go from milling to drilling), you **must set Z again**:
 
@@ -362,7 +383,7 @@ When you replace a bit (for example, to go from milling to drilling), you **must
 
 * Send the `G10 L20 P1 Z0` command or use the **Set Z=0** macro you created. You have now re-zeroed Z.
 
-* **Load** the drilling Gcode
+* **Load** the drilling Gcode (or the outline Gcode, depending on what you're doing)
 
 * **Apply HeightMap**
 
@@ -378,6 +399,8 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 * Raise the mill back to a comfortable height.
 * Remove the rigged BitZero.
 * If you flipped the board, you must plot a height map again before milling or drilling and **Apply HeightMap** to the drill file.
+
+
 
 # Soldering
 
