@@ -110,6 +110,10 @@ If you change this, you need to apply your changes using **Edit** → **Edit Tra
 
 Once everything is on F.Cu, you can swap F.Cu and B.Cu (using menu **Edit** → **Swap Layers...**) to transpose F.Cu to the back. Alternatively, if you are not planning to use a PCB manufacturing service, you can do all routing on B.Cu from the start.
 
+# Stating the obvious: check your PCB
+
+This is obvious, but my most frequent mistakes are incorrect rotation of pin headers and misalignment of pins. Hold the parts you will use to the screen. It sounds silly, but holding them next to each other is a great way to find bugs. Check pin assignments. Use a measuring tool in KiCad to check distances between pins (typically multiples of 2.54mm) and alignment. Measure the distance between the physical pins with a caliper to verify your PCB design.
+
 # KiCad PCB Export
 
 A few things to keep in mind when exporting from KiCad's PCB editor:
