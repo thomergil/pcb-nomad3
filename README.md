@@ -113,7 +113,7 @@ Once everything is on F.Cu, you can swap F.Cu and B.Cu (using menu **Edit** → 
 
 # Stating the obvious: check your PCB
 
-This is obvious, but my most frequent mistakes are incorrect rotation of pin headers and misalignment of pins. Hold the parts you will use to the screen. It sounds silly, but holding them next to each other is a great way to find bugs. Check pin assignments. Use a measuring tool in KiCad to check distances between pins (typically multiples of 2.54mm) and alignment. Measure the distance between the physical pins with a caliper to verify your PCB design. And, of course, **Run DRC** and fix all Violations and Unconnected items.
+This is obvious, but my most frequent mistakes are incorrect rotation of pin headers and misalignment of pins. Hold the parts you will use to the screen. It sounds silly, but holding them next to each other is a great way to find bugs. Check pin assignments. Use the measuring tool in KiCad to check distances between pins (typically multiples of 2.54mm) and alignment. Measure the distance between the physical pins with a caliper to verify your PCB design. And, of course, **Run DRC** and fix all Violations and Unconnected items.
 
 # KiCad PCB Export
 
