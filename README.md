@@ -244,6 +244,46 @@ Generate the **outline** file:
 pcb2gcode --outline decibel-meter-Edge_Cuts.gbr --cut-side back
 ```
 
+Alternatively, download and my wrapper, [pcb2gcode-wrapper](pcb2gcode-wrapper), which invokes all three scripts with the same parameters that you pass it. This ensures all files are consistent with each other. For example:
+
+```bash 
+$ pcb2gcode-wrapper speedometer --mill-diameters=0.169 --y-offset=4 --x-offset=-140
+
+Processing back copper...
+Running: pcb2gcode --back speedometer-B_Cu.gbr --basename speedometer --mill-diameters=0.169 --y-offset=4 --x-offset=-140
+Importing front side... not specified.
+Importing back side... DONE.
+Importing outline... not specified.
+Processing input files... DONE.
+Exporting back... DONE. (Height: 70.8137mm Width: 133.031mm)
+Importing drill... not specified.
+END.
+
+Processing drill holes...
+Running: pcb2gcode --drill speedometer-PTH.drl --drill-side back --basename speedometer --mill-diameters=0.169 --y-offset=4 --x-offset=-140
+Warning: Board dimensions unknown. Gcode for drilling will be probably misaligned.
+Importing front side... not specified.
+Importing back side... not specified.
+Importing outline... not specified.
+Processing input files... DONE.
+Importing drill... DONE.
+Exporting milldrill... Exporting drill... DONE. The board should be drilled from the BACK side.
+END.
+
+Processing board outline...
+Running: pcb2gcode --outline speedometer-Edge_Cuts.gbr --cut-side back --basename speedometer --mill-diameters=0.169 --y-offset=4 --x-offset=-140
+Importing front side... not specified.
+Importing back side... not specified.
+Importing outline... DONE.
+Processing input files... DONE.
+Exporting outline... DONE. (Height: 71.9127mm Width: 134.13mm) The board should be cut from the BACK side.
+Importing drill... not specified.
+END.
+All operations completed successfully!
+```
+
+
+
 You should now have  `.ngc` files.
 
 # Attach copper clad to jig

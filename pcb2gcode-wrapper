@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+# Ensure we have at least the basename
+if ARGV.empty?
+  puts 'Error: BASENAME is required'
+  puts 'Usage: pcb2gcode-wrapper BASENAME [options]'
+  puts '  Any options will be passed to all three pcb2gcode commands'
+  puts ''
+  puts 'Runs pcb2gcode three times:'
+  puts '  1. For back copper, --back on [basename]-B_Cu.gbr'
+  puts '  2. For drill holes, --drill on [basename]-PTH.drl'
+  puts '  3. For board outline, --outline on [basename]-Edge_Cuts.gbr'
+  exit 1
+end
+
+# Get the basename and the rest of the arguments
+basename = ARGV.shift
+other_args = ARGV.join(' ')
+
+# Function to run a command and handle errors
+def run_command(cmd)
+  puts "Running: #{cmd}"
+  result = system(cmd)
+  return if result
+
+  puts "Error executing command: #{cmd}"
+  exit 1
+end
+
+# Run the back copper command
+back_cmd = "pcb2gcode --back #{basename}-B_Cu.gbr --basename #{basename} #{other_args}"
+puts "\nProcessing back copper..."
+run_command(back_cmd)
+
+# Run the drill command
+drill_cmd = "pcb2gcode --drill #{basename}-PTH.drl --drill-side back --basename #{basename} #{other_args}"
+puts "\nProcessing drill holes..."
+run_command(drill_cmd)
+
+# Run the outline command
+outline_cmd = "pcb2gcode --outline #{basename}-Edge_Cuts.gbr --cut-side back --basename #{basename} #{other_args}"
+puts "\nProcessing board outline..."
+run_command(outline_cmd)
+
+puts 'All operations completed successfully!'
