@@ -244,7 +244,7 @@ Generate the **outline** file:
 pcb2gcode --outline decibel-meter-Edge_Cuts.gbr --cut-side back
 ```
 
-Alternatively, download and my wrapper, [pcb2gcode-wrapper](pcb2gcode-wrapper), which invokes all three scripts with the same parameters that you pass it. This ensures all files are consistent with each other. For example:
+Alternatively, download and run my wrapper, [pcb2gcode-wrapper](pcb2gcode-wrapper), which invokes all three scripts with the same parameters that you pass it. This ensures all files are consistent with each other. For example:
 
 ```bash 
 $ pcb2gcode-wrapper speedometer --mill-diameters=0.169 --y-offset=4 --x-offset=-140
