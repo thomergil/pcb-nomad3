@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# Define constants
+MILLREADY_CMD = 'pcb2gcode-millready'
+
 # Ensure we have at least the basename
 if ARGV.empty?
   puts 'Error: BASENAME is required'
@@ -17,14 +20,21 @@ end
 basename = ARGV.shift
 other_args = ARGV.join(' ')
 
+# Extract the output directory if specified
+output_dir = ""
+if other_args =~ /--output-dir\s+(\S+)/
+  output_dir = $1.chomp('/') + '/'
+  puts "Output directory detected: #{output_dir}"
+end
+
 # Function to check if a command is available in PATH and executable
 def command_available?(cmd)
   system("which #{cmd} > /dev/null 2>&1")
 end
 
 # Check if pcb2gcode-millready is available
-millready_available = command_available?('pcb2gcode-millready')
-puts "pcb2gcode-millready #{millready_available ? 'found' : 'not found'} in PATH"
+millready_available = command_available?(MILLREADY_CMD)
+puts "#{MILLREADY_CMD} #{millready_available ? 'found' : 'not found'} in PATH"
 
 # Function to run a command and handle errors
 def run_command(cmd)
@@ -37,32 +47,35 @@ def run_command(cmd)
 end
 
 # Function to run pcb2gcode-millready on an NGC file if available
-def run_millready(input_file, millready_available)
-  return unless millready_available && File.exist?(input_file)
-  
-  output_file = input_file.sub('.ngc', '-millready.ngc')
-  cmd = "pcb2gcode-millready #{input_file} #{output_file}"
+def run_millready(input_file, output_dir, millready_available)
+  # Prepend output directory if specified
+  full_input_path = output_dir + input_file
+
+  return unless millready_available && File.exist?(full_input_path)
+
+  output_file = full_input_path.sub('.ngc', '-millready.ngc')
+  cmd = "#{MILLREADY_CMD} #{full_input_path} #{output_file}"
   puts "Running: #{cmd}"
   result = system(cmd)
-  puts "Warning: pcb2gcode-millready failed on #{input_file}" unless result
+  puts "Warning: #{MILLREADY_CMD} failed on #{full_input_path}" unless result
 end
 
 # Run the back copper command
 back_cmd = "pcb2gcode --back #{basename}-B_Cu.gbr --basename #{basename} #{other_args}"
 puts "\nProcessing back copper..."
 run_command(back_cmd)
-run_millready("#{basename}_back.ngc", millready_available)
+run_millready("#{basename}_back.ngc", output_dir, millready_available)
 
 # Run the drill command
 drill_cmd = "pcb2gcode --drill #{basename}-PTH.drl --drill-side back --basename #{basename} #{other_args}"
 puts "\nProcessing drill holes..."
 run_command(drill_cmd)
-run_millready("#{basename}_drill.ngc", millready_available)
+run_millready("#{basename}_drill.ngc", output_dir, millready_available)
 
 # Run the outline command
 outline_cmd = "pcb2gcode --outline #{basename}-Edge_Cuts.gbr --cut-side back --basename #{basename} #{other_args}"
 puts "\nProcessing board outline..."
 run_command(outline_cmd)
-run_millready("#{basename}_outline.ngc", millready_available)
+run_millready("#{basename}_outline.ngc", output_dir, millready_available)
 
 puts 'All operations completed successfully!'
