@@ -2,7 +2,7 @@
 
 I tried everything between [Carbide Copper](https://carbide3d.com/copper/), which seems abandoned at best and buggy at worst: it does not seem to spin the spindle. I played with [FlatCAM](http://flatcam.org/) and [bCNC](https://github.com/vlachoudis/bCNC), which I used to brick my Nomad 3. (I provide [instructions to reset the GRBL on a Nomad 3](https://github.com/thomergil/carbide3d-grbl-recovery?tab=readme-ov-file), much thanks to Carbide 3D support.)
 
-Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) and [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot), which supports auto-leveling. Unfortunately—I typically use Mac and Linux—**OpenCNCPilot only works on Windows**. Annoying as that may be, it might be worth the sacrifice, in this case. You can operate your Nomad 3 fully using Windows.
+Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) for generating G-code and [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot), which supports auto-leveling. Unfortunately—I typically use Mac and Linux—**OpenCNCPilot only works on Windows**. Annoying as that may be, it might be worth the sacrifice, in this case. You can operate your Nomad 3 entirely using Windows.
 
 # Example results
 
@@ -18,7 +18,7 @@ Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) and
 
 # Acknowledgements
 
-This has been partly inspired by [Chris Kohlhardt's notes](https://www.chriskohlhardt.com/small-double-sided-pcb-traces-on-nomad-cnc). He does it with FlatCAM and bCNC. I found both rather inscrutable. Thank you to https://github.com/deHarro and https://github.com/martin2250 for the [feedback](https://github.com/martin2250/OpenCNCPilot/issues/201).
+[Chris Kohlhardt's notes](https://www.chriskohlhardt.com/small-double-sided-pcb-traces-on-nomad-cnc) partly inspired this work. He uses FlatCAM and bCNC. I found both rather inscrutable. Thank you to https://github.com/deHarro and https://github.com/martin2250 for the [feedback](https://github.com/martin2250/OpenCNCPilot/issues/201). Much thanks to [Eyal](https://github.com/eyal0) for [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode).
 
 # CNC Machine
 
@@ -30,13 +30,11 @@ Unfortunately, [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot) exists
 
 # PCB blanks / Copper Clad
 
-I use 2x3" and 4x6" PCB blanks that I order [from Carbide 3D](https://shop.carbide3d.com/collections/materials/products/fr1-copper-clad?variant=41237063046). They are single-sided ("SS") or double-sided ("DS") and are also sold on Amazon and AliExpress.
+I use 2x3" and 4x6" PCB blanks that I order [from Carbide 3D](https://shop.carbide3d.com/collections/materials/products/fr1-copper-clad?variant=41237063046). I have also used 100x150mm and 150x200mm PCB blanks. They are single-sided ("SS") or double-sided ("DS") and are also sold on Amazon and AliExpress.
 
 You'll likely start with your entire PCB on one (the non-copper) side and soldering the pins on the copper side, so **you need single-sided copper clad**.
 
-If you are planning to put, say, the ground plane on the opposite side, you will need **double-sided copper clad**.
-
-Keep in mind that plugging in pins through double-sided copper clad will connect the pins on **both sides of the board, even if you only solder one side**. The edges of the pin will very likely make contact with the copper. I learned this the hard way. 💥
+If you plan to put the ground plane on the opposite side, you will need **double-sided copper clad**. However, I have not yet found a good way to work with double-sided copper clad. Remember that plugging in pins through double-sided copper clad will connect the pins on **both sides of the board, even if you only solder one side**. The edges of the pin will very likely make contact with the copper. I learned this the hard way. 💥
 
 # Drill/Mill bits
 
@@ -44,7 +42,7 @@ Keep in mind that plugging in pins through double-sided copper clad will connect
 
 * [#501 PCB Engraver (30º) bits from Carbide 3D](https://shop.carbide3d.com/products/501-engraving-bit?_pos=3&_psq=pcb&_ss=e&_v=1.0)
 * [Coated 30º V-Groove bits from bits&bits](https://bitsbits.com/product/60-degree-v-groove/)
-* [FoxAlien 30º bits via Amazon](https://a.co/d/37hDOj5)
+* [FoxAlien 30º bits via Amazon](https://a.co/d/37hDOj5) are my favorites as they are very cheap and do the job.
 
 40º V-bits:
 
@@ -65,7 +63,7 @@ You need to rig the [BitZero V2](https://shop.carbide3d.com/products/bitzero-v2-
 
 ![bitzero-rig](img/bitzero-rig1.png)
 
-The BitZero is squeezed on both sides by two metal rings, held in place by a bolt and screw; an alligator clip attaches to the bolt. The alligator clip connects to an alligator clip that attaches to the copper clad. Make sure to place the BitZero on **something non-conductive**.
+The BitZero is squeezed on both sides by two metal rings. The rings are held in place by a bolt and screw; an alligator clip attaches to the bolt. The alligator clip connects to an alligator clip that attaches to the copper clad. Make sure to place the BitZero on **something non-conductive**.
 
 ![bitzero-rig](img/bitzero-rig2.png)
 
@@ -206,7 +204,7 @@ Some of these values are **critically important**:
 
 * `zsafe` is the travel height of the mill bit; **if this is too low your bit will crash into the jig, breaking the mill or worse**. Once you get the hang of it, you can make this as low as 2.
 * `zchange` is the height for changing the mill bit; if you choose this number too high and your drill bit is long, the process will error out, because it runs into the hard limit of the machine.
-* `zwork` is how deep the mill drills into the copper substrate; start with `0.5` (for a 30º Vbit) or `0.05` and iterate deeper as needed; this also depends on the V-bit you are using.
+* `zwork` is how deep the mill drills into the copper substrate; start with `0.05` and iterate deeper as needed; this also depends on the V-bit you are using.
 * `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3.
 * `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
 * For `--mill-diameters` you can use this [tool cutting width calculator](https://hobbycnc.com/tool-width-calculator/) to figure out the correct number.
@@ -292,7 +290,7 @@ Cover the entire bottom surface of the copper clad (all the way to the edges) wi
 
 ![tape](img/tape.png)
 
-Then press the copper clad into the jig:
+Then press the copper clad into the jig with a poper towel:
 
 ![clad-in-jig](img/clad-in-jig.png)
 
@@ -303,12 +301,12 @@ OpenCNCPilot is a little quirky, but it does everything you need. Please start b
 ### General notes on OpenCNCPilot
 
 * As you learn to use OpenCNCPilot, **stay close to your CNC machine with your finger on the power switch**.
-* There is not enough vertical space in the user interface to fold open all menus, so you need to manage them. You'll use **File**, and **Edit**, and **Probing**, and **Manual**, and **Manual Probing**. I try to only ever open one at a time and close the ones I don't use.
-* You can reposition the view by double-clicking the right mouse button. You can rotate and pitch the view by dragging the view with the right mouse button. You can zoom in and out with the mouse wheel (or whatever equivalent trackpad gesture you have). Also, under the **Debug** menu (on the right) you can **Lay flat 3D Viewport** and **Restore Viewport**.
+* There is not enough vertical space in the user interface to fold open all menus, so you need to manage them. You'll use the menus **File**, **Edit**, **Probing**, and **Manual Probing**. I try to only ever open one at a time and close the ones I don't use.
+* You can reposition the view by double-clicking the right mouse button. You can rotate and pitch the view by dragging the view with the right mouse button. You can zoom in and out with the mouse wheel (or whatever equivalent trackpad gesture you have). Also, under the **Debug** menu (on the right), you can **Lay flat 3D Viewport** and **Restore Viewport**.
 
 ![viewport](img/viewport.png)Ho
 
-* While learning OpenCNCPilot, I destroyed a half-dozen mill bits. I suggest you **start with cheap throwaway bits** while you're learning.
+* While learning OpenCNCPilot, I destroyed a half-dozen mill bits. You should **start with cheap throwaway bits** while you're learning.
 * You can home to (X = 0, Y = 0) without changing height by typing `G0 X0 Y0` in the field under the **Manual** menu and then pressing **Send**. Make sure the bit is at a safe height.
 
 ![home-xy](img/home-xy.png)
@@ -444,8 +442,8 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 
 # Soldering
 
-* Sand the copper surface with 600+ grit sandpaper or 0000 steel wool. Sand in **one direction only**; do not make circular motions.
-* Clean the surface with isopropyl alcohol using a dust-free cloth.
+* Sand the copper surface with 600+ grit sandpaper. Do not use 0000 steel wool, as it creates a mess and leaves behind strands. Sand in **one direction only**; do not make circular motions.
+* Optionally, clean the surface with isopropyl alcohol using a dust-free cloth.
 * Stick the pin headers or components through the holes.
 * Dab the tips and copper with a flux pen. Don't worry about flux being absorbed by the fiberglass.
 * Use magnifying glasses.
