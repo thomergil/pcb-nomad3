@@ -216,6 +216,7 @@ Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**
 # optional: --basename FOO to give file a nice prefix
 # optional: --output-dir DIR to write file to another directory
 # optional: --x-offset negative number moves the PCB to the right of the origin
+#					  this should equal the width of your board
 # --mill-diameters: the width of your mill at the given zwork
 pcb2gcode --back decibel-meter-B_Cu.gbr --mill-diameters=0.169
 ```
@@ -227,6 +228,7 @@ Generate the Excelon **drill** file:
 # optional: --basename FOO to give file a nice prefix
 # optional: --output-dir DIR to write file to another directory
 # optional: --x-offset negative number moves the PCB to the right of the origin
+#					  this should equal the width of your board
 #           MAKE SURE THIS IS THE SAME AS THE SETTING FOR B_Cu ABOVE
 pcb2gcode --drill decibel-meter-PTH.drl --drill-side back
 ```
@@ -238,6 +240,7 @@ Generate the **outline** file:
 # optional: --basename FOO to give file a nice prefix
 # optional: --output-dir DIR to write file to another directory
 # optional: --x-offset negative number moves the PCB to the right of the origin
+#					  this should equal the width of your board
 #           MAKE SURE THIS IS THE SAME AS THE SETTING FOR B_Cu ABOVE
 pcb2gcode --outline decibel-meter-Edge_Cuts.gbr --cut-side back
 ```
