@@ -2,12 +2,19 @@
 
 # Define constants
 MILLREADY_CMD = 'pcb2gcode-millready'
+# X-offset margin: additional space added to board width for x-offset calculation
+# Formula: x-offset = -1 * (ceil(width_in_mm) + X_OFFSET_MARGIN)
+X_OFFSET_MARGIN = 1
+# Default Y-offset: moves the PCB away from the origin in the Y direction
+# This provides clearance for tooling and workholding
+DEFAULT_Y_OFFSET = 2
 
 # Ensure we have at least the basename
 if ARGV.empty?
   puts 'Error: BASENAME is required'
   puts 'Usage: pcb2gcode-wrapper BASENAME [options]'
   puts '  Any options will be passed to all three pcb2gcode commands'
+  puts '  The --x-offset parameter will be automatically calculated from edge cuts if present'
   puts ''
   puts 'Runs pcb2gcode three times:'
   puts '  1. For back copper, --back on [basename]-B_Cu.gbr'
@@ -21,10 +28,101 @@ basename = ARGV.shift
 other_args = ARGV.join(' ')
 
 # Extract the output directory if specified
-output_dir = ""
+output_dir = ''
 if other_args =~ /--output-dir\s+(\S+)/
-  output_dir = $1.chomp('/') + '/'
+  output_dir = Regexp.last_match(1).chomp('/') + '/'
   puts "Output directory detected: #{output_dir}"
+end
+
+# Function to parse Gerber file and extract board dimensions
+def parse_gerber_dimensions(filename)
+  return nil unless File.exist?(filename)
+
+  xmin = xmax = ymin = ymax = nil
+  units_factor = 10000.0  # Default: decimills to inches
+
+  File.open(filename, 'r') do |file|
+    file.each_line do |line|
+      # Check for units specification in Gerber header
+      if line =~ /%FSLAX(\d)(\d)Y(\d)(\d)\*%/
+        # Format specification: FSLAX24Y24 means 2.4 format (2 integer, 4 decimal places)
+        x_integer = $1.to_i
+        x_decimal = $2.to_i
+        # For X24Y24 format, coordinates are in 10^-4 inches (decimills)
+        # For X23Y23 format, coordinates are in 10^-3 inches (mils)
+        units_factor = 10.0 ** x_decimal
+        puts "Detected Gerber format: #{x_integer}.#{x_decimal}, units factor: #{units_factor}"
+      elsif line =~ /%MOMM\*%/
+        # Millimeter units - coordinates will be in nanometers typically
+        units_factor = 1000000.0  # nanometers to mm, then convert to inches
+        puts "Detected millimeter units in Gerber file"
+      elsif line =~ /%MOIN\*%/
+        # Inch units
+        puts "Detected inch units in Gerber file"
+      end
+
+      # Match X and Y coordinates in Gerber format
+      if line =~ /^X([\d-]+)Y([\d-]+)/
+        x = $1.to_i
+        y = $2.to_i
+
+        xmin = xmin ? [xmin, x].min : x
+        xmax = xmax ? [xmax, x].max : x
+        ymin = ymin ? [ymin, y].min : y
+        ymax = ymax ? [ymax, y].max : y
+      end
+    end
+  end
+
+  return nil if xmin.nil? || xmax.nil?
+
+  # Calculate dimensions
+  width = xmax - xmin
+  height = ymax - ymin
+
+  # Convert to inches based on detected format
+  if units_factor == 1000000.0  # millimeters (nanometer coordinates)
+    width_mm = width / units_factor  # nanometers -> mm
+    height_mm = height / units_factor
+    width_inches = width_mm / 25.4  # mm -> inches
+    height_inches = height_mm / 25.4
+    puts "Board dimensions in mm: #{width_mm.round(2)}mm x #{height_mm.round(2)}mm"
+  else
+    width_inches = width / units_factor  # decimills or other inch-based units
+    height_inches = height / units_factor
+  end
+
+  puts "Board dimensions detected: #{width_inches.round(4)}\" x #{height_inches.round(4)}\" (#{(width_inches * 25.4).round(2)}mm x #{(height_inches * 25.4).round(2)}mm)"
+
+  # Calculate x-offset as -1 * (ceil(width_in_mm) + X_OFFSET_MARGIN)
+  # Use millimeters for the calculation instead of inches
+  width_mm_for_calc = width_inches * 25.4
+  x_offset = -1 * (width_mm_for_calc.ceil + X_OFFSET_MARGIN)
+  puts "Calculated x-offset: #{x_offset} (based on width: #{width_mm_for_calc.round(2)}mm + #{X_OFFSET_MARGIN}mm margin)"
+
+  x_offset
+end
+
+# Check for edge cuts file and calculate x-offset
+edge_cuts_file = "#{basename}-Edge_Cuts.gbr"
+x_offset = parse_gerber_dimensions(edge_cuts_file)
+
+# Add x-offset to other_args if calculated and not already present
+if x_offset && !other_args.include?('--x-offset')
+  other_args += " --x-offset=#{x_offset}"
+  puts "Automatically added --x-offset=#{x_offset} to commands"
+elsif other_args.include?('--x-offset')
+  puts "x-offset parameter already specified in arguments, skipping auto-calculation"
+elsif !File.exist?(edge_cuts_file)
+  puts "Warning: #{edge_cuts_file} not found, cannot auto-calculate x-offset"
+end
+
+# Add default y-offset if not already present
+if !other_args.include?('--y-offset')
+  other_args += " --y-offset=#{DEFAULT_Y_OFFSET}"
+  puts "Automatically added --y-offset=#{DEFAULT_Y_OFFSET} to commands"
+else
+  puts "y-offset parameter already specified in arguments, skipping default"
 end
 
 # Function to check if a command is available in PATH and executable
@@ -54,7 +152,7 @@ def run_millready(input_file, output_dir, millready_available)
   return unless millready_available && File.exist?(full_input_path)
 
   output_file = full_input_path.sub('.ngc', '-millready.ngc')
-  cmd = "#{MILLREADY_CMD} #{full_input_path} #{output_file}"
+  cmd = "#{MILLREADY_CMD} --remove-m6 --fix-helical-arcs #{full_input_path} #{output_file}"
   puts "Running: #{cmd}"
   result = system(cmd)
   puts "Warning: #{MILLREADY_CMD} failed on #{full_input_path}" unless result
@@ -71,6 +169,7 @@ drill_cmd = "pcb2gcode --drill #{basename}-PTH.drl --drill-side back --basename 
 puts "\nProcessing drill holes..."
 run_command(drill_cmd)
 run_millready("#{basename}_drill.ngc", output_dir, millready_available)
+run_millready("#{basename}_milldrill.ngc", output_dir, millready_available)
 
 # Run the outline command
 outline_cmd = "pcb2gcode --outline #{basename}-Edge_Cuts.gbr --cut-side back --basename #{basename} #{other_args}"
