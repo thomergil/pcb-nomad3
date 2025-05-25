@@ -251,7 +251,9 @@ Alternatively, download and run my wrapper, [pcb2gcode-wrapper](pcb2gcode-wrappe
 $ pcb2gcode-wrapper decibel-meter --mill-diameters=0.169
 ```
 
-You should now have `.ngc` files.
+`pcb2gcode-wrapper` automatically invokes my G-code modifier script [pcb2gcode-millready](https://github.com/thomergil/pcb2gcode-millready?tab=readme-ov-file) if present. It swaps the initial XY/Z moves to reduce the risk of the drill breaking and fixes a Nomad 3 error related to mill drilling.
+
+Either way, you should now have `.ngc` files.
 
 # Attach copper clad to jig
 
