@@ -136,6 +136,8 @@ Using menu File → Plot...:
 
 ![kicad-plot](img/kicad-plot.png)
 
+Press "Plot".
+
 Then:
 
 - Generate Drill Files...
@@ -395,7 +397,7 @@ When you replace a bit (for example, to go from milling to drilling), you **must
 
 - **Load** the drilling Gcode (or the outline Gcode, depending on what you're doing)
 
-- **Apply HeightMap**
+- **DO NOT Apply HeightMap on (mill) drill files**
 
 - **Start**
 
