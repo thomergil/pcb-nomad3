@@ -34,43 +34,49 @@ if other_args =~ /--output-dir\s+(\S+)/
   puts "Output directory detected: #{output_dir}"
 end
 
+# Ensure the output directory exists; exit with error if it doesn't exist
+unless output_dir.empty? || Dir.exist?(output_dir)
+  puts "Error: Output directory '#{output_dir}' does not exist."
+  exit 1
+end
+
 # Function to parse Gerber file and extract board dimensions
 def parse_gerber_dimensions(filename)
   return nil unless File.exist?(filename)
 
   xmin = xmax = ymin = ymax = nil
-  units_factor = 10000.0  # Default: decimills to inches
+  units_factor = 10_000.0 # Default: decimills to inches
 
   File.open(filename, 'r') do |file|
     file.each_line do |line|
       # Check for units specification in Gerber header
       if line =~ /%FSLAX(\d)(\d)Y(\d)(\d)\*%/
         # Format specification: FSLAX24Y24 means 2.4 format (2 integer, 4 decimal places)
-        x_integer = $1.to_i
-        x_decimal = $2.to_i
+        x_integer = Regexp.last_match(1).to_i
+        x_decimal = Regexp.last_match(2).to_i
         # For X24Y24 format, coordinates are in 10^-4 inches (decimills)
         # For X23Y23 format, coordinates are in 10^-3 inches (mils)
-        units_factor = 10.0 ** x_decimal
+        units_factor = 10.0**x_decimal
         puts "Detected Gerber format: #{x_integer}.#{x_decimal}, units factor: #{units_factor}"
       elsif line =~ /%MOMM\*%/
         # Millimeter units - coordinates will be in nanometers typically
-        units_factor = 1000000.0  # nanometers to mm, then convert to inches
-        puts "Detected millimeter units in Gerber file"
+        units_factor = 1_000_000.0 # nanometers to mm, then convert to inches
+        puts 'Detected millimeter units in Gerber file'
       elsif line =~ /%MOIN\*%/
         # Inch units
-        puts "Detected inch units in Gerber file"
+        puts 'Detected inch units in Gerber file'
       end
 
       # Match X and Y coordinates in Gerber format
-      if line =~ /^X([\d-]+)Y([\d-]+)/
-        x = $1.to_i
-        y = $2.to_i
+      next unless line =~ /^X([\d-]+)Y([\d-]+)/
 
-        xmin = xmin ? [xmin, x].min : x
-        xmax = xmax ? [xmax, x].max : x
-        ymin = ymin ? [ymin, y].min : y
-        ymax = ymax ? [ymax, y].max : y
-      end
+      x = Regexp.last_match(1).to_i
+      y = Regexp.last_match(2).to_i
+
+      xmin = xmin ? [xmin, x].min : x
+      xmax = xmax ? [xmax, x].max : x
+      ymin = ymin ? [ymin, y].min : y
+      ymax = ymax ? [ymax, y].max : y
     end
   end
 
@@ -81,14 +87,14 @@ def parse_gerber_dimensions(filename)
   height = ymax - ymin
 
   # Convert to inches based on detected format
-  if units_factor == 1000000.0  # millimeters (nanometer coordinates)
-    width_mm = width / units_factor  # nanometers -> mm
+  if units_factor == 1_000_000.0 # millimeters (nanometer coordinates)
+    width_mm = width / units_factor # nanometers -> mm
     height_mm = height / units_factor
-    width_inches = width_mm / 25.4  # mm -> inches
+    width_inches = width_mm / 25.4 # mm -> inches
     height_inches = height_mm / 25.4
     puts "Board dimensions in mm: #{width_mm.round(2)}mm x #{height_mm.round(2)}mm"
   else
-    width_inches = width / units_factor  # decimills or other inch-based units
+    width_inches = width / units_factor # decimills or other inch-based units
     height_inches = height / units_factor
   end
 
@@ -112,7 +118,7 @@ if x_offset && !other_args.include?('--x-offset')
   other_args += " --x-offset=#{x_offset}"
   puts "Automatically added --x-offset=#{x_offset} to commands"
 elsif other_args.include?('--x-offset')
-  puts "x-offset parameter already specified in arguments, skipping auto-calculation"
+  puts 'x-offset parameter already specified in arguments, skipping auto-calculation'
 elsif !File.exist?(edge_cuts_file)
   puts "Warning: #{edge_cuts_file} not found, cannot auto-calculate x-offset"
 end
@@ -122,7 +128,7 @@ if !other_args.include?('--y-offset')
   other_args += " --y-offset=#{DEFAULT_Y_OFFSET}"
   puts "Automatically added --y-offset=#{DEFAULT_Y_OFFSET} to commands"
 else
-  puts "y-offset parameter already specified in arguments, skipping default"
+  puts 'y-offset parameter already specified in arguments, skipping default'
 end
 
 # Function to check if a command is available in PATH and executable
@@ -152,7 +158,7 @@ def run_millready(input_file, output_dir, millready_available)
   return unless millready_available && File.exist?(full_input_path)
 
   output_file = full_input_path.sub('.ngc', '-millready.ngc')
-  cmd = "#{MILLREADY_CMD} --remove-m6 --fix-helical-arcs #{full_input_path} #{output_file}"
+  cmd = "#{MILLREADY_CMD} --remove-m6 #{full_input_path} #{output_file}"
   puts "Running: #{cmd}"
   result = system(cmd)
   puts "Warning: #{MILLREADY_CMD} failed on #{full_input_path}" unless result
