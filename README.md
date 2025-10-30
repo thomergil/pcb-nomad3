@@ -326,7 +326,7 @@ In the **Manual** menu, :heavy_check_mark: the **Enable Keyboard Jogging**, and 
 
 ![jogging](img/jogging.png)
 
-Make sure to set zero slightly away from the clip [see image below], but don't worry about the right Z. I look at the bit with one eye, both from the front and from the side window, to ensure it's correctly aligned with the corner. You can stay slightly above the surface. Try to get it within 1mm. We will take care of Z below.
+Ensure that you set the zero point slightly away from the clip [see image below], but don't worry about the exact height. You can stay slightly above the surface. Try to get it within 1mm. We will take care of Z below.
 
 ![zero](img/zero.png)
 
