@@ -107,6 +107,7 @@ While you are at it, you need to also make the tracks wider and clearance wider:
   - Set **uVia Hole to 0.1mm**.
   - Set **DP Width to 0.4mm**.
   - Set **DP Gap to 0.5mm**.
+
 - Using **File** → **Board Setup** → **Board Stackup** → **Physical Stackup**
 
   - Set **Copper layers** to 2 using the drop-down at the top of the window.
@@ -257,6 +258,12 @@ Alternatively, download and run my wrapper, [pcb2gcode-wrapper](pcb2gcode-wrappe
 
 ```bash
 $ pcb2gcode-wrapper decibel-meter --mill-diameters=0.169
+```
+
+The wrapper automatically calculates the `--x-offset` from the board width: `x-offset = -1 * (ceil(width_mm) + x_margin)`. The default `x_margin` is 5mm. The `--y-offset` defaults to 3mm (the `y_margin` value). You can override these defaults:
+
+```bash
+$ pcb2gcode-wrapper decibel-meter --mill-diameters=0.169 --x-margin 10 --y-margin 7
 ```
 
 `pcb2gcode-wrapper` automatically invokes my G-code modifier script [pcb2gcode-millready](https://github.com/thomergil/pcb2gcode-millready?tab=readme-ov-file) if present. It swaps the initial XY/Z moves to reduce the risk of the drill breaking and fixes a Nomad 3 error related to mill drilling.
