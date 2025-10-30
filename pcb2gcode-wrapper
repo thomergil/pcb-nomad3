@@ -3,12 +3,18 @@
 
 # Define constants
 MILLREADY_CMD = 'pcb2gcode-millready'
-# X-offset margin: additional space added to board width for x-offset calculation
-# Formula: x-offset = -1 * (ceil(width_in_mm) + X_OFFSET_MARGIN)
-X_OFFSET_MARGIN = 1
-# Default Y-offset: moves the PCB away from the origin in the Y direction
-# This provides clearance for tooling and workholding
-DEFAULT_Y_OFFSET = 2
+# Default margins: additional space added to board dimensions for offset calculations
+#
+# X-offset calculation: depends on board width
+#   Formula: x-offset = -1 * (ceil(width_in_mm) + x_margin)
+#   The negative sign moves the PCB to the right of the origin.
+#   This is calculated from the edge cuts file to position the board correctly.
+#
+# Y-offset calculation: fixed margin value (not based on board height)
+#   Formula: y-offset = y_margin
+#   This is a simple offset for clearance/tooling, not calculated from dimensions.
+DEFAULT_X_MARGIN = 5
+DEFAULT_Y_MARGIN = 3
 
 # Display help message
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
@@ -23,13 +29,16 @@ def show_help
   puts ''
   puts 'OPTIONS:'
   puts '  -h, --help                 Show this help message and exit'
+  puts "  --x-margin VALUE           X margin (in mm) used for x-offset calculation (default: #{DEFAULT_X_MARGIN})"
+  puts "  --y-margin VALUE           Y margin (in mm) used for y-offset (default: #{DEFAULT_Y_MARGIN})"
   puts '  Any other options will be passed to all three pcb2gcode commands'
   puts '  The --x-offset parameter will be automatically calculated from edge cuts if present'
-  puts '  The --y-offset parameter defaults to 2mm if not specified'
+  puts "  The --y-offset parameter defaults to #{DEFAULT_Y_MARGIN}mm if not specified"
   puts ''
   puts 'EXAMPLES:'
   puts '  pcb2gcode-wrapper myboard'
   puts '  pcb2gcode-wrapper myboard --output-dir ./output'
+  puts '  pcb2gcode-wrapper myboard --x-margin 10 --y-margin 7'
   puts '  pcb2gcode-wrapper myboard --x-offset=-10 --y-offset=5'
 end
 # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
@@ -51,6 +60,27 @@ end
 # Get the basename and the rest of the arguments
 basename = ARGV.shift
 other_args = ARGV.join(' ')
+
+# Extract margin from arguments
+def extract_margin(other_args, margin_name, default_value)
+  margin = default_value
+  pattern = /--#{margin_name}-margin(?:=|\s+)(\S+)/
+  if other_args =~ pattern
+    margin_raw = Regexp.last_match(1)
+    margin = margin_raw.to_f
+    if margin <= 0
+      puts "Error: #{margin_name.upcase} margin must be a positive number, got: #{margin_raw}"
+      exit 1
+    end
+    puts "#{margin_name.upcase} margin set to: #{margin}mm"
+    # Remove --#{margin_name}-margin from other_args so it doesn't get passed to pcb2gcode
+    other_args = other_args.sub(pattern, '').gsub(/\s+/, ' ').strip
+  end
+  [margin, other_args]
+end
+
+x_margin, other_args = extract_margin(other_args, 'x', DEFAULT_X_MARGIN)
+y_margin, other_args = extract_margin(other_args, 'y', DEFAULT_Y_MARGIN)
 
 # Extract the output directory if specified
 output_dir = ''
@@ -142,13 +172,13 @@ def display_board_dimensions(width_inches, height_inches)
        "(#{width_mm_display}mm x #{height_mm_display}mm)"
 end
 
-# Calculate x-offset from width
-def calculate_x_offset(width_inches)
-  width_mm_for_calc = width_inches * 25.4
-  x_offset = -1 * (width_mm_for_calc.ceil + X_OFFSET_MARGIN)
-  puts "Calculated x-offset: #{x_offset} " \
-       "(based on width: #{width_mm_for_calc.round(2)}mm + #{X_OFFSET_MARGIN}mm margin)"
-  x_offset
+# Calculate offset from dimension and margin
+def calculate_offset(dimension_inches, margin, axis_name, dimension_name, negative: false)
+  dimension_mm = dimension_inches * 25.4
+  offset = negative ? -1 * (dimension_mm.ceil + margin) : (dimension_mm.ceil + margin)
+  puts "Calculated #{axis_name}-offset: #{offset} " \
+       "(based on #{dimension_name}: #{dimension_mm.round(2)}mm + #{margin}mm #{axis_name}-margin)"
+  offset
 end
 
 # Extract coordinates from Gerber file
@@ -167,7 +197,7 @@ def extract_coordinates(filename)
 end
 
 # Function to parse Gerber file and extract board dimensions
-def parse_gerber_dimensions(filename)
+def parse_gerber_dimensions(filename, x_margin)
   return nil unless File.exist?(filename)
 
   xmin, xmax, ymin, ymax, units_factor, millimeter_units = extract_coordinates(filename)
@@ -177,30 +207,36 @@ def parse_gerber_dimensions(filename)
   height = ymax - ymin
   width_inches, height_inches = convert_to_inches(width, height, units_factor, millimeter_units)
   display_board_dimensions(width_inches, height_inches)
-  calculate_x_offset(width_inches)
+  calculate_offset(width_inches, x_margin, 'x', 'width', negative: true)
 end
 
 # Check for edge cuts file and calculate x-offset
+# Note: x-offset is calculated from board width (width + x_margin), unlike y-offset
 edge_cuts_file = "#{basename}-Edge_Cuts.gbr"
-x_offset = parse_gerber_dimensions(edge_cuts_file)
+x_offset = parse_gerber_dimensions(edge_cuts_file, x_margin)
 
-# Add x-offset to other_args if calculated and not already present
-if x_offset && !other_args.include?('--x-offset')
-  other_args += " --x-offset=#{x_offset}"
-  puts "Automatically added --x-offset=#{x_offset} to commands"
-elsif other_args.include?('--x-offset')
-  puts 'x-offset parameter already specified in arguments, skipping auto-calculation'
+# Add offset to other_args if calculated and not already present
+def add_offset_to_args(other_args, offset, axis_name)
+  offset_flag = "--#{axis_name}-offset"
+  if offset && !other_args.include?(offset_flag)
+    other_args += " #{offset_flag}=#{offset}"
+    puts "Automatically added #{offset_flag}=#{offset} to commands"
+  elsif other_args.include?(offset_flag)
+    puts "#{axis_name}-offset parameter already specified in arguments, skipping auto-calculation"
+  end
+  other_args
+end
+
+# Add x-offset if calculated
+if x_offset
+  other_args = add_offset_to_args(other_args, x_offset, 'x')
 elsif !File.exist?(edge_cuts_file)
   puts "Warning: #{edge_cuts_file} not found, cannot auto-calculate x-offset"
 end
 
-# Add default y-offset if not already present
-if !other_args.include?('--y-offset')
-  other_args += " --y-offset=#{DEFAULT_Y_OFFSET}"
-  puts "Automatically added --y-offset=#{DEFAULT_Y_OFFSET} to commands"
-else
-  puts 'y-offset parameter already specified in arguments, skipping default'
-end
+# Add y-offset (just the margin value, not calculated from board height)
+# Note: y-offset is a fixed value (y_margin), unlike x-offset which is calculated from width
+other_args = add_offset_to_args(other_args, y_margin, 'y') unless other_args.include?('--y-offset')
 
 # Function to check if a command is available in PATH and executable
 def command_available?(cmd)

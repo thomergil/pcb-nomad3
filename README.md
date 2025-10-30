@@ -95,15 +95,21 @@ To adapt the design for CNC manufacturing, you need to move all routing (includi
 
 While you are at it, you need to also make the tracks wider and clearance wider:
 
-- Using **File** → **Board Setup** → **Board Stackup** → **Physical Stackup**
-
-  - Set **Copper layers** to 2 using the drop-down at the top of the window.
+![margins](img/kicad-margins.png)
 
 - Using **File** → **Board Setup** → **Design Rules** → **Net Classes**:
 
-  - Set **track width to a minimum of 0.5mm** for all netclasses; I go up to 1mm for higher-voltage classes.
+  - Set **Clearance to 0.34mm** for all netclasses, the maximum without things getting buggy.
+  - Set **Track Width to a minimum of 0.6mm** for all netclasses; I go up to 1mm for higher-voltage classes.
+  - Set **Via Size to 0.6mm**.
+  - Set **Via Hole to 0.3mm**.
+  - Set **µVia Size to 0.3mm**.
+  - Set **uVia Hole to 0.1mm**.
+  - Set **DP Width to 0.4mm**.
+  - Set **DP Gap to 0.5mm**.
+- Using **File** → **Board Setup** → **Board Stackup** → **Physical Stackup**
 
-  - Set **clearance to 0.34mm** for all netclasses, the maximum without things getting buggy.
+  - Set **Copper layers** to 2 using the drop-down at the top of the window.
 
 If you change this, you need to apply your changes using **Edit** → **Edit Track and Via Properties** → select **Set to net class / custom rule values** and **Apply**. Then run the **Design Rules Checker** and fix any errors due to the width changes. People [have reported thinner track widths](https://github.com/martin2250/OpenCNCPilot/issues/198), though.
 
@@ -313,7 +319,7 @@ In the **Manual** menu, :heavy_check_mark: the **Enable Keyboard Jogging**, and 
 
 ![jogging](img/jogging.png)
 
-Make sure you get exactly to the bottom left corner in terms of X and Y, but don't worry about the right Z. I look at the bit with one eye, both from the front and from the side window, to ensure it's correctly aligned with the corner. You can stay slightly above the surface. Try to get it within 1mm. We will take care of Z below.
+Make sure to set zero slightly away from the clip [see image below], but don't worry about the right Z. I look at the bit with one eye, both from the front and from the side window, to ensure it's correctly aligned with the corner. You can stay slightly above the surface. Try to get it within 1mm. We will take care of Z below.
 
 ![zero](img/zero.png)
 
