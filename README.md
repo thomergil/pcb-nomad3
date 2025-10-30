@@ -117,7 +117,7 @@ This is obvious, but my most frequent mistakes are incorrect rotation of pin hea
 
 A few things to keep in mind when exporting from KiCad's PCB editor:
 
-- Make the Edge Cut layer match exactly the dimensions of the PCB blank.
+- The Edge Cut layer will be where the CNC drills the board out of the copper clad.
 - Ensure enough space (at least 2mm) between the edges and the circuitry.
 - Using menu **Place** → **Place Drill/Place File Origin**, place the origin at the bottom left of the Edge Cut layer.
 - Similarly, using menu **Place** → **Grid Origin**, place the origin at the bottom left of the Edge Cut layer.

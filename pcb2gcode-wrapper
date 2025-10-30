@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # Define constants
 MILLREADY_CMD = 'pcb2gcode-millready'
@@ -9,17 +10,41 @@ X_OFFSET_MARGIN = 1
 # This provides clearance for tooling and workholding
 DEFAULT_Y_OFFSET = 2
 
-# Ensure we have at least the basename
-if ARGV.empty?
-  puts 'Error: BASENAME is required'
+# Display help message
+# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+def show_help
   puts 'Usage: pcb2gcode-wrapper BASENAME [options]'
-  puts '  Any options will be passed to all three pcb2gcode commands'
-  puts '  The --x-offset parameter will be automatically calculated from edge cuts if present'
   puts ''
-  puts 'Runs pcb2gcode three times:'
+  puts 'DESCRIPTION:'
+  puts '  Wrapper script that runs pcb2gcode three times with the specified basename:'
   puts '  1. For back copper, --back on [basename]-B_Cu.gbr'
   puts '  2. For drill holes, --drill on [basename]-PTH.drl'
   puts '  3. For board outline, --outline on [basename]-Edge_Cuts.gbr'
+  puts ''
+  puts 'OPTIONS:'
+  puts '  -h, --help                 Show this help message and exit'
+  puts '  Any other options will be passed to all three pcb2gcode commands'
+  puts '  The --x-offset parameter will be automatically calculated from edge cuts if present'
+  puts '  The --y-offset parameter defaults to 2mm if not specified'
+  puts ''
+  puts 'EXAMPLES:'
+  puts '  pcb2gcode-wrapper myboard'
+  puts '  pcb2gcode-wrapper myboard --output-dir ./output'
+  puts '  pcb2gcode-wrapper myboard --x-offset=-10 --y-offset=5'
+end
+# rubocop:enable Metrics/MethodLength, Metrics/AbcSize
+
+# Check for help flag
+if ARGV.include?('--help') || ARGV.include?('-h')
+  show_help
+  exit 0
+end
+
+# Ensure we have at least the basename
+if ARGV.empty?
+  puts 'Error: BASENAME is required'
+  puts ''
+  show_help
   exit 1
 end
 
@@ -29,9 +54,17 @@ other_args = ARGV.join(' ')
 
 # Extract the output directory if specified
 output_dir = ''
-if other_args =~ /--output-dir\s+(\S+)/
-  output_dir = Regexp.last_match(1).chomp('/') + '/'
+# Match both --output-dir value and --output-dir=value formats
+# Pattern matches: --output-dir=value or --output-dir value
+if other_args =~ /--output-dir(?:=|\s+)(\S+)/
+  output_dir_raw = Regexp.last_match(1)
+  # Expand ~ to home directory and ensure trailing slash
+  output_dir_expanded = File.expand_path(output_dir_raw).chomp('/')
+  output_dir = "#{output_dir_expanded}/"
   puts "Output directory detected: #{output_dir}"
+  # Replace the original --output-dir value in other_args with expanded path
+  # This ensures pcb2gcode gets the expanded path (it may not expand ~ itself)
+  other_args = other_args.sub(/--output-dir(?:=|\s+)\S+/, "--output-dir=#{output_dir_expanded}")
 end
 
 # Ensure the output directory exists; exit with error if it doesn't exist
@@ -40,73 +73,111 @@ unless output_dir.empty? || Dir.exist?(output_dir)
   exit 1
 end
 
+# Parse FSLAX format specification
+def parse_fslax_format(line)
+  return nil unless line =~ /%FSLAX(\d)(\d)Y(\d)(\d)\*%/
+
+  x_integer = Regexp.last_match(1).to_i
+  x_decimal = Regexp.last_match(2).to_i
+  units_factor = 10.0**x_decimal
+  puts "Detected Gerber format: #{x_integer}.#{x_decimal}, units factor: #{units_factor}"
+  units_factor
+end
+
+# Handle millimeter units detection
+def handle_millimeter_units
+  puts 'Detected millimeter units in Gerber file'
+  [1_000_000.0, true]
+end
+
+# Parse units specification from Gerber header line
+def parse_gerber_units(line, units_factor, millimeter_units)
+  case line
+  when /%FSLAX(\d)(\d)Y(\d)(\d)\*%/
+    units_factor = parse_fslax_format(line) || units_factor
+  when /%MOMM\*%/
+    units_factor, millimeter_units = handle_millimeter_units
+  when /%MOIN\*%/
+    puts 'Detected inch units in Gerber file'
+  end
+  [units_factor, millimeter_units]
+end
+
+# Extract coordinates from Gerber line and update bounds
+def update_coordinate_bounds(line, xmin, xmax, ymin, ymax)
+  return [xmin, xmax, ymin, ymax] unless line =~ /^X([\d-]+)Y([\d-]+)/
+
+  x = Regexp.last_match(1).to_i
+  y = Regexp.last_match(2).to_i
+
+  xmin = xmin ? [xmin, x].min : x
+  xmax = xmax ? [xmax, x].max : x
+  ymin = ymin ? [ymin, y].min : y
+  ymax = ymax ? [ymax, y].max : y
+  [xmin, xmax, ymin, ymax]
+end
+
+# Convert millimeter coordinates to inches
+def convert_millimeters_to_inches(width, height, units_factor)
+  width_mm = width / units_factor
+  height_mm = height / units_factor
+  puts "Board dimensions in mm: #{width_mm.round(2)}mm x #{height_mm.round(2)}mm"
+  [width_mm / 25.4, height_mm / 25.4]
+end
+
+# Convert dimensions to inches based on detected format
+def convert_to_inches(width, height, units_factor, millimeter_units)
+  if millimeter_units
+    convert_millimeters_to_inches(width, height, units_factor)
+  else
+    [width / units_factor, height / units_factor]
+  end
+end
+
+# Calculate and display board dimensions
+def display_board_dimensions(width_inches, height_inches)
+  width_mm_display = (width_inches * 25.4).round(2)
+  height_mm_display = (height_inches * 25.4).round(2)
+  puts "Board dimensions detected: #{width_inches.round(4)}\" x #{height_inches.round(4)}\" " \
+       "(#{width_mm_display}mm x #{height_mm_display}mm)"
+end
+
+# Calculate x-offset from width
+def calculate_x_offset(width_inches)
+  width_mm_for_calc = width_inches * 25.4
+  x_offset = -1 * (width_mm_for_calc.ceil + X_OFFSET_MARGIN)
+  puts "Calculated x-offset: #{x_offset} " \
+       "(based on width: #{width_mm_for_calc.round(2)}mm + #{X_OFFSET_MARGIN}mm margin)"
+  x_offset
+end
+
+# Extract coordinates from Gerber file
+def extract_coordinates(filename)
+  xmin = xmax = ymin = ymax = nil
+  units_factor = 10_000.0 # Default: decimills to inches
+  millimeter_units = false
+
+  File.open(filename, 'r') do |file|
+    file.each_line do |line|
+      units_factor, millimeter_units = parse_gerber_units(line, units_factor, millimeter_units)
+      xmin, xmax, ymin, ymax = update_coordinate_bounds(line, xmin, xmax, ymin, ymax)
+    end
+  end
+  [xmin, xmax, ymin, ymax, units_factor, millimeter_units]
+end
+
 # Function to parse Gerber file and extract board dimensions
 def parse_gerber_dimensions(filename)
   return nil unless File.exist?(filename)
 
-  xmin = xmax = ymin = ymax = nil
-  units_factor = 10_000.0 # Default: decimills to inches
-
-  File.open(filename, 'r') do |file|
-    file.each_line do |line|
-      # Check for units specification in Gerber header
-      if line =~ /%FSLAX(\d)(\d)Y(\d)(\d)\*%/
-        # Format specification: FSLAX24Y24 means 2.4 format (2 integer, 4 decimal places)
-        x_integer = Regexp.last_match(1).to_i
-        x_decimal = Regexp.last_match(2).to_i
-        # For X24Y24 format, coordinates are in 10^-4 inches (decimills)
-        # For X23Y23 format, coordinates are in 10^-3 inches (mils)
-        units_factor = 10.0**x_decimal
-        puts "Detected Gerber format: #{x_integer}.#{x_decimal}, units factor: #{units_factor}"
-      elsif line =~ /%MOMM\*%/
-        # Millimeter units - coordinates will be in nanometers typically
-        units_factor = 1_000_000.0 # nanometers to mm, then convert to inches
-        puts 'Detected millimeter units in Gerber file'
-      elsif line =~ /%MOIN\*%/
-        # Inch units
-        puts 'Detected inch units in Gerber file'
-      end
-
-      # Match X and Y coordinates in Gerber format
-      next unless line =~ /^X([\d-]+)Y([\d-]+)/
-
-      x = Regexp.last_match(1).to_i
-      y = Regexp.last_match(2).to_i
-
-      xmin = xmin ? [xmin, x].min : x
-      xmax = xmax ? [xmax, x].max : x
-      ymin = ymin ? [ymin, y].min : y
-      ymax = ymax ? [ymax, y].max : y
-    end
-  end
-
+  xmin, xmax, ymin, ymax, units_factor, millimeter_units = extract_coordinates(filename)
   return nil if xmin.nil? || xmax.nil?
 
-  # Calculate dimensions
   width = xmax - xmin
   height = ymax - ymin
-
-  # Convert to inches based on detected format
-  if units_factor == 1_000_000.0 # millimeters (nanometer coordinates)
-    width_mm = width / units_factor # nanometers -> mm
-    height_mm = height / units_factor
-    width_inches = width_mm / 25.4 # mm -> inches
-    height_inches = height_mm / 25.4
-    puts "Board dimensions in mm: #{width_mm.round(2)}mm x #{height_mm.round(2)}mm"
-  else
-    width_inches = width / units_factor # decimills or other inch-based units
-    height_inches = height / units_factor
-  end
-
-  puts "Board dimensions detected: #{width_inches.round(4)}\" x #{height_inches.round(4)}\" (#{(width_inches * 25.4).round(2)}mm x #{(height_inches * 25.4).round(2)}mm)"
-
-  # Calculate x-offset as -1 * (ceil(width_in_mm) + X_OFFSET_MARGIN)
-  # Use millimeters for the calculation instead of inches
-  width_mm_for_calc = width_inches * 25.4
-  x_offset = -1 * (width_mm_for_calc.ceil + X_OFFSET_MARGIN)
-  puts "Calculated x-offset: #{x_offset} (based on width: #{width_mm_for_calc.round(2)}mm + #{X_OFFSET_MARGIN}mm margin)"
-
-  x_offset
+  width_inches, height_inches = convert_to_inches(width, height, units_factor, millimeter_units)
+  display_board_dimensions(width_inches, height_inches)
+  calculate_x_offset(width_inches)
 end
 
 # Check for edge cuts file and calculate x-offset
@@ -151,18 +222,31 @@ def run_command(cmd)
 end
 
 # Function to run pcb2gcode-millready on an NGC file if available
+# rubocop:disable Metrics/MethodLength
 def run_millready(input_file, output_dir, millready_available)
+  return unless millready_available
+
   # Prepend output directory if specified
   full_input_path = output_dir + input_file
 
-  return unless millready_available && File.exist?(full_input_path)
+  # Check if file exists in output directory, fallback to current directory
+  if File.exist?(full_input_path)
+    output_file = full_input_path.sub('.ngc', '-millready.ngc')
+  elsif File.exist?(input_file)
+    puts "Debug: Found #{input_file} in current directory (output-dir may not be working)"
+    full_input_path = input_file
+    output_file = input_file.sub('.ngc', '-millready.ngc')
+  else
+    puts "Warning: #{input_file} not found in #{output_dir.empty? ? 'current directory' : output_dir}"
+    return
+  end
 
-  output_file = full_input_path.sub('.ngc', '-millready.ngc')
   cmd = "#{MILLREADY_CMD} --remove-m6 #{full_input_path} #{output_file}"
   puts "Running: #{cmd}"
   result = system(cmd)
   puts "Warning: #{MILLREADY_CMD} failed on #{full_input_path}" unless result
 end
+# rubocop:enable Metrics/MethodLength
 
 # Run the back copper command
 back_cmd = "pcb2gcode --back #{basename}-B_Cu.gbr --basename #{basename} #{other_args}"
