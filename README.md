@@ -429,7 +429,7 @@ If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/
 
 # Soldering
 
-- Sand the copper surface with 600+ grit sandpaper. Do not use 0000 steel wool, as it creates a mess and leaves behind strands. Sand in **one direction only**; do not make circular motions.
+- Sand the copper surface with 600+ grit sandpaper. I do this closely over a vacuum cleaner. Do not use 0000 steel wool, as it creates a mess and leaves behind strands. Sand in **one direction only**; do not make circular motions.
 - Optionally, clean the surface with isopropyl alcohol using a dust-free cloth.
 - Stick the pin headers or components through the holes.
 - Dab the tips and copper with a flux pen. Don't worry about flux being absorbed by the fiberglass.
