@@ -30,7 +30,9 @@ Unfortunately, [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot) exists
 
 # PCB blanks / Copper Clad
 
-I use 2x3" and 4x6" PCB blanks that I order [from Carbide 3D](https://shop.carbide3d.com/collections/materials/products/fr1-copper-clad?variant=41237063046). I have also used 100x150mm and 150x200mm PCB blanks. They are single-sided ("SS") or double-sided ("DS") and are also sold on Amazon and AliExpress.
+🚨 **First of all, and most importantly: DO NOT USE FR4 copper clad in a CNC machine. Only ever use FR1 copper clad. Glass fiber dust is an extremely dangerous health hazard. :skull_and_crossbones:**
+
+I use 2x3" and 4x6" PCB blanks that I order [from Carbide 3D](https://shop.carbide3d.com/collections/materials/products/fr1-copper-clad?variant=41237063046). I have also used 100x150mm and 150x200mm PCB blanks. They are single-sided ("SS") or double-sided ("DS") and are also sold on Amazon and AliExpress. As mentioned above, **only use FR1 copper clad, NEVER USE FR4**.
 
 You'll likely start with your entire PCB on one (the non-copper) side and soldering the pins on the copper side, so **you need single-sided copper clad**.
 
