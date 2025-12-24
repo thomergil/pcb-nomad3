@@ -172,12 +172,14 @@ metric=true
 metricoutput=true
 
 # milling
-zwork=-0.06          # Depth in mm.
-zsafe=20			       # Height for movements; start with 20mm, but can be lower!
-# zsafe=1            # Height for movements; can be as low as 2mm if you are confident
+zwork=-0.06          # Depth in mm; -0.06mm and -0.07mm work well for me
+zsafe=20			       # Height for movements; start with 20mm, can be 1mm if confident
+# zsafe=1            # Height for movements; start with 20mm, can be 1mm if confident
 zchange=35           # Height for tool changes
-mill-feed=100        # Feed rate in mm/minute
-mill-speed=12000     # RPM for milling
+mill-feed=100        # Feed rate in mm/minute; can go up to 600, or even 800.
+                     # That will DRAMATICALLY speed up the milling process at the price
+                     # of slightly more granural cuts.
+mill-speed=12000     # RPM for milling; can go up to 14000 or even 16000
 nom6=1               # Don't issue M6 command
 spinup-time=3.0      # Time to spin up the spindle in seconds
 spindown-time=3.0    # Time to spin up the spindle in seconds
@@ -187,25 +189,26 @@ milling-overlap=25%  # Re-mill with 25% overlap as part of creating isolation wi
 
 # Voronoi regions
 voronoi=1            # Try it out! Makes soldering easier, but looks funky; default 0
+# min-path-length=0.1 # Not yet in the official release, currently in MR
 
 # drilling
 zdrill=-1.7          # Drill depth; measure your copper clad
 zmilldrill=-1.7      # Mill drill depth; measure your copper clad
-drill-feed=100       # Feed rate in mm/minute
-drill-speed=12000    # RPM for drilling
+drill-feed=100       # Feed rate in mm/minute; can go up to 200
+drill-speed=12000    # RPM for drilling; can go up to 14000
 nog81=1              # Use G0/G1 instead of G81/G80
-drills-available=1.0 # Your 1mm drill bit
-min-milldrill-hole-diameter=1.01 # Milldrill anything greater than 1mm
-milldrill-diameter=1.0 # Same drill bit as drilling
+drills-available=0.8 # Your 0.8 drill bit
+min-milldrill-hole-diameter=0.81 # Milldrill anything greater than 1mm
+milldrill-diameter=0.8 # Same drill bit as drilling
 
 # outline cutting
 zcut=-1.7            # Cut depth for outline; same as drill depth
 cut-feed=100         # Feed rate for outline cutting; same as milling
-cut-vertfeed=60      # Vertical feed rate; similar to drill-feed
+cut-vertfeed=60      # Vertical feed rate; similar to drill-feed; can go up to 20
 cut-speed=16000      # RPM for cutting; same as mill-speed
-cutter-diameter=1.0  # Diameter of end mill for cutting (in mm)
+cutter-diameter=0.8  # Diameter of end mill for cutting (in mm)
 bridgesnum=0         # No bridges; it's stuck with tape
-cut-infeed=0.6       # Max cutting depth per pass
+cut-infeed=0.4       # Max cutting depth per pass
 
 # this will mess up offset! don't use!
 # zero-start=true
@@ -219,6 +222,7 @@ Some of these values are **critically important**:
 - `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3.
 - `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
 - For `--mill-diameters` you can use this [tool cutting width calculator](https://hobbycnc.com/tool-width-calculator/) to figure out the correct number.
+- Once you're comfortable with the process, you can **dramatically speed it up** by increasing values marked "can go up to" in the comments above: `mill-feed`, `mill-speed`, `drill-feed`, and `drill-speed`. Higher speeds mean faster operation but may produce slightly rougher cuts.
 
 Run [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) to generate the **back**, which, confusingly, is what we're going to mill.
 
