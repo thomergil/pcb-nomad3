@@ -3,6 +3,7 @@
 
 # Define constants
 MILLREADY_CMD = 'pcb2gcode-millready'
+COMBINE_CMD = 'pcb2gcode-combine'
 # Default margins: additional space added to board dimensions for offset calculations
 #
 # X-offset calculation: depends on board width
@@ -31,6 +32,7 @@ def show_help
   puts '  -h, --help                 Show this help message and exit'
   puts "  --x-margin VALUE           X margin (in mm) used for x-offset calculation (default: #{DEFAULT_X_MARGIN})"
   puts "  --y-margin VALUE           Y margin (in mm) used for y-offset (default: #{DEFAULT_Y_MARGIN})"
+  puts '  --no-combine               Skip combining drill/milldrill/outline into single file'
   puts '  Any other options will be passed to all three pcb2gcode commands'
   puts '  The --x-offset parameter will be automatically calculated from edge cuts if present'
   puts "  The --y-offset parameter defaults to #{DEFAULT_Y_MARGIN}mm if not specified"
@@ -81,6 +83,10 @@ end
 
 x_margin, other_args = extract_margin(other_args, 'x', DEFAULT_X_MARGIN)
 y_margin, other_args = extract_margin(other_args, 'y', DEFAULT_Y_MARGIN)
+
+# Check for --no-combine flag
+skip_combine = other_args.include?('--no-combine')
+other_args = other_args.sub('--no-combine', '').gsub(/\s+/, ' ').strip if skip_combine
 
 # Extract the output directory if specified
 output_dir = ''
@@ -247,6 +253,10 @@ end
 millready_available = command_available?(MILLREADY_CMD)
 puts "#{MILLREADY_CMD} #{millready_available ? 'found' : 'not found'} in PATH"
 
+# Check if pcb2gcode-combine is available
+combine_available = command_available?(COMBINE_CMD)
+puts "#{COMBINE_CMD} #{combine_available ? 'found' : 'not found'} in PATH"
+
 # Function to run a command and handle errors
 def run_command(cmd)
   puts "Running: #{cmd}"
@@ -303,4 +313,40 @@ puts "\nProcessing board outline..."
 run_command(outline_cmd)
 run_millready("#{basename}_outline.ngc", output_dir, millready_available)
 
-puts 'All operations completed successfully!'
+# Combine drill, milldrill, and outline into a single file
+unless skip_combine
+  if combine_available
+    drill_file = "#{output_dir}#{basename}_drill-millready.ngc"
+    milldrill_file = "#{output_dir}#{basename}_milldrill-millready.ngc"
+    outline_file = "#{output_dir}#{basename}_outline-millready.ngc"
+    combined_file = "#{output_dir}#{basename}_01_combined.ngc"
+
+    # Check which files exist
+    input_files = [drill_file, milldrill_file, outline_file].select { |f| File.exist?(f) }
+
+    if input_files.length >= 2
+      puts "\nCombining drill operations..."
+      cmd = "#{COMBINE_CMD} #{input_files.join(' ')} -o #{combined_file}"
+      puts "Running: #{cmd}"
+      if system(cmd)
+        puts "Created combined file: #{combined_file}"
+
+        # Rename back file to sort first
+        back_file = "#{output_dir}#{basename}_back-millready.ngc"
+        back_file_renamed = "#{output_dir}#{basename}_00_back.ngc"
+        if File.exist?(back_file)
+          File.rename(back_file, back_file_renamed)
+          puts "Renamed: #{back_file} -> #{back_file_renamed}"
+        end
+      else
+        puts "Warning: #{COMBINE_CMD} failed"
+      end
+    else
+      puts "Warning: Need at least 2 files to combine, found #{input_files.length}"
+    end
+  else
+    puts "\nSkipping combine: #{COMBINE_CMD} not found in PATH"
+  end
+end
+
+puts "\nAll operations completed successfully!"

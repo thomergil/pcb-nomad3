@@ -256,7 +256,14 @@ Generate the **outline** file:
 pcb2gcode --outline decibel-meter-Edge_Cuts.gbr --cut-side back
 ```
 
-Alternatively, download and run my wrapper, [pcb2gcode-wrapper](pcb2gcode-wrapper), which invokes all three scripts with the same parameters and automatically calculates offsets from your `Edge_Cuts.gbr` file:
+Alternatively, install my [pcb2gcode-tools](https://github.com/thomergil/pcb2gcode-tools) package:
+
+```bash
+brew install pipx
+pipx install git+https://github.com/thomergil/pcb2gcode-tools
+```
+
+Then run `pcb2gcode-wrapper`, which invokes all three scripts with the same parameters, automatically calculates offsets from your `Edge_Cuts.gbr` file, and post-processes the output:
 
 ```bash
 $ pcb2gcode-wrapper decibel-meter --mill-diameters=0.169
@@ -268,7 +275,7 @@ The wrapper automatically calculates the `--x-offset` from the board width: `x-o
 $ pcb2gcode-wrapper decibel-meter --mill-diameters=0.169 --x-margin 10 --y-margin 7
 ```
 
-`pcb2gcode-wrapper` automatically invokes my G-code modifier script [pcb2gcode-millready](https://github.com/thomergil/pcb2gcode-millready?tab=readme-ov-file) if present. It swaps the initial XY/Z moves to reduce the risk of the drill breaking and fixes a Nomad 3 error related to mill drilling.
+The wrapper automatically runs `pcb2gcode-fixup` (swaps initial XY/Z moves for safety) and `pcb2gcode-combine` (merges drill/milldrill/outline into a single file when they use the same bit).
 
 Either way, you should now have `.ngc` files.
 
