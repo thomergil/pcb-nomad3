@@ -365,6 +365,7 @@ Open the **Probe** menu:
 - Press **Create New**.
 - Set Grid Size to 3 or 4. (5 is not enough; 2 is probably unnecessary.)
 - Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots, including the square/rectangle cutout lines, which are going to be etched, also. You should add at least a margin 2mm around your PCB.
+- You can have OpenCNCPilot auto-generate the probe area by using `Size from Gcode`; set it to `1mm` and press **Apply**.
 - **Hint:** If you are concerned about probing past the edge of the copper clad—trust me, this will happen to you too, and you'll break your drill bit—you should manually jog the mill to the edge. The user interface will show you (through the blue virtual mill) where you are. You can arrange the red dots accordingly, ensuring you always stay on the copper clad.
 - Press **OK**.
 
