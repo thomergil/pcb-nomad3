@@ -2,7 +2,7 @@
 
 I tried everything between [Carbide Copper](https://carbide3d.com/copper/), which seems abandoned at best and buggy at worst: it does not seem to spin the spindle. I played with [FlatCAM](http://flatcam.org/) and [bCNC](https://github.com/vlachoudis/bCNC), which I used to brick my Nomad 3. (I provide [instructions to reset the GRBL on a Nomad 3](https://github.com/thomergil/carbide3d-grbl-recovery?tab=readme-ov-file), much thanks to Carbide 3D support.)
 
-Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) for generating G-code and [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot), which supports auto-leveling. Unfortunately—I typically use Mac and Linux—**OpenCNCPilot only works on Windows**. Annoying as that may be, it might be worth the sacrifice, in this case. You can operate your Nomad 3 entirely using Windows.
+Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) for generating G-code and [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot) for auto-leveling. OpenCNCPilot worked well, but it only runs on Windows and the GUI can be cumbersome when you're standing at a CNC machine. I eventually forked it into [coppercli](https://github.com/thomergil/coppercli), a cross-platform keyboard-driven CLI that runs on **macOS, Linux, and Windows**.
 
 # Example results
 
@@ -18,7 +18,7 @@ Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) for
 
 # Acknowledgements
 
-[Chris Kohlhardt's notes](https://www.chriskohlhardt.com/small-double-sided-pcb-traces-on-nomad-cnc) partly inspired this work. He uses FlatCAM and bCNC. I found both rather inscrutable. Thank you to https://github.com/deHarro and https://github.com/martin2250 for the [feedback](https://github.com/martin2250/OpenCNCPilot/issues/201). Much thanks to [Eyal](https://github.com/eyal0) for [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode).
+[Chris Kohlhardt's notes](https://www.chriskohlhardt.com/small-double-sided-pcb-traces-on-nomad-cnc) partly inspired this work. He uses FlatCAM and bCNC. I found both rather inscrutable. Much thanks to [martin2250](https://github.com/martin2250) for [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot), which coppercli is based on, and for the [feedback](https://github.com/martin2250/OpenCNCPilot/issues/201). Thank you to https://github.com/deHarro. Much thanks to [Eyal](https://github.com/eyal0) for [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode).
 
 # CNC Machine
 
@@ -26,7 +26,7 @@ This has been tested on a [Carbide 3D Nomad 3](https://shop.carbide3d.com/produc
 
 # Mac? Windows? Linux?
 
-Unfortunately, [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot) exists only for Windows. 🙁 It needs to be attached directly to the CNC Machine. I have not (yet) tried running it using a VM.
+[coppercli](https://github.com/thomergil/coppercli) runs on macOS, Linux, and Windows. It needs to be attached directly to the CNC machine via USB serial or Ethernet (untested).
 
 # PCB blanks / Copper Clad
 
@@ -61,13 +61,9 @@ I provide [several different-sized jigs on printables.com](https://www.printable
 
 # BitZero attachment
 
-You need to rig the [BitZero V2](https://shop.carbide3d.com/products/bitzero-v2-for-nomad-3). Anything works as long as it conducts ground between the top of the copper clad and the BitZero. This is my solution:
+You need to rig the [BitZero V2](https://shop.carbide3d.com/products/bitzero-v2-for-nomad-3). Anything works as long as it conducts ground between the top of the copper clad and the BitZero. This is my solution.
 
-![bitzero-rig](img/bitzero-rig1.png)
-
-The BitZero is squeezed on both sides by two metal rings. The rings are held in place by a bolt and screw; an alligator clip attaches to the bolt. The alligator clip connects to an alligator clip that attaches to the copper clad. Make sure to place the BitZero on **something non-conductive**.
-
-![bitzero-rig](img/bitzero-rig2.png)
+![bitzero-rig](img/bitzero-rig.png)
 
 # Outline
 
@@ -196,7 +192,7 @@ zdrill=-1.7          # Drill depth; measure your copper clad
 zmilldrill=-1.7      # Mill drill depth; measure your copper clad
 drill-feed=100       # Feed rate in mm/minute; can go up to 200
 drill-speed=12000    # RPM for drilling; can go up to 14000
-nog81=1              # Use G0/G1 instead of G81/G80
+nog81=1              # Use G0/G1 instead of G81/G80; required for coppercli
 drills-available=0.8 # Your 0.8 drill bit
 min-milldrill-hole-diameter=0.81 # Milldrill anything greater than 1mm
 milldrill-diameter=0.8 # Same drill bit as drilling
@@ -293,151 +289,111 @@ Then press the copper clad into the jig with a poper towel:
 
 ![clad-in-jig](img/clad-in-jig.png)
 
-# OpenCNCPilot
+# coppercli
 
-OpenCNCPilot is a little quirky, but it does everything you need. Please start by reading through the [OpenCNCPilot README](https://github.com/martin2250/OpenCNCPilot/blob/master/README.md).
+[coppercli](https://github.com/thomergil/coppercli) is a keyboard-driven CLI tool for PCB milling with auto-leveling. See the [coppercli README](https://github.com/thomergil/coppercli#readme) for installation instructions and full documentation.
 
-### General notes on OpenCNCPilot
+### General notes
 
-- As you learn to use OpenCNCPilot, **stay close to your CNC machine with your finger on the power switch**.
-- There is not enough vertical space in the user interface to fold open all menus, so you need to manage them. You'll use the menus **File**, **Edit**, **Probing**, and **Manual Probing**. I try to only ever open one at a time and close the ones I don't use.
-- You can reposition the view by double-clicking the right mouse button. You can rotate and pitch the view by dragging the view with the right mouse button. You can zoom in and out with the mouse wheel (or whatever equivalent trackpad gesture you have). Also, under the **Debug** menu (on the right), you can **Lay flat 3D Viewport** and **Restore Viewport**.
+- As you learn, **stay close to your CNC machine with your finger on the power switch**.
+- While learning, I destroyed a half-dozen mill bits. You should **start with cheap throwaway bits**.
+- coppercli is entirely keyboard-driven. Use arrow keys to navigate menus and select options.
+- Use **Jog** to move the spindle. Arrow keys move X/Y, Page Up/Down moves Z. Press `Tab` to cycle through speed presets (Fast/Normal/Slow/Creep).
 
-![viewport](img/viewport.png)Ho
+### coppercli and Carbide Motion don't play nice
 
-- While learning OpenCNCPilot, I destroyed a half-dozen mill bits. You should **start with cheap throwaway bits** while you're learning.
-- You can home to (X = 0, Y = 0) without changing height by typing `G0 X0 Y0` in the field under the **Manual** menu and then pressing **Send**. Make sure the bit is at a safe height.
+Switching **to** coppercli after using Carbide Motion is usually OK. However, using Carbide Motion **after** coppercli can fail in mysterious ways, starting with initialization and homing. Stay close and keep your finger on the power button. If weird things happen, follow my [instructions to reset the GRBL on a Nomad 3](https://github.com/thomergil/carbide3d-grbl-recovery?tab=readme-ov-file).
 
-![home-xy](img/home-xy.png)
+### Start coppercli
 
-- Consider making two macros you will use frequently using the **Macro menu**:
+Run `coppercli` from the command line. From the main menu, choose **Connection**. coppercli will auto-detect your serial port and baud rate. Once connected, it will offer to home the machine.
 
-  - `G0 X0 Y0` to **Home to (0, 0)**
-    (This moves the spindle to the current home location without changing Z.)
-  - `G10 L20 P1 Z0` to **Set Z=0**
-    (This sets whatever the spindle is currently at as Z=0 without changing X, Y.)
+**If it's not working**: reset the machine, restart coppercli. Make sure the door magnet is engaged.
 
-- If the machine gets stuck or OpenCNCPilot seems frozen, try the **Soft Reset** button before resetting the machine. Also: you forgot the magnet on the door sensor. 🙂
+### Load the G-code
 
-### OpenCNCPilot and Carbide Motion don't play nice
-
-Switching **to** OpenCNCPilot after using Carbide Motion is usually OK. However, using Carbide Motion **after** OpenCNCPilot can fail in mysterious ways, starting with initialization and homing. Stay close and keep your finger on the power button. If weird things happen, follow my [instructions to reset the GRBL on a Nomad 3](https://github.com/thomergil/carbide3d-grbl-recovery?tab=readme-ov-file).
-
-### Start OpenCNCPilot
-
-Using the **Machine** menu on the right, **Connect** to the printer and **Home Machine**.
-
-**If it's not working**: reset the machine, close, and open OpenCNCPilot. Make sure the door magnet is engaged.
-
-### Load the Gcode
-
-Using the **File** menu, load the `.ngc` file generated by `pcb2gcode`. You should see a visualization of your PCB.
+Choose **Load G-Code** and browse to the `.ngc` file generated by `pcb2gcode`.
 
 ### Set the zero point for X and Y (but Z comes later)
 
-In the **Manual** menu, :heavy_check_mark: the **Enable Keyboard Jogging**, and set Feed to 100, click inside the **Jogging Keyboard Focus** and use the left, right, up, down, page up, page down keys to maneuver the mill bit to the bottom left corner of the copper clad. You can increase the **Feed** to 5000 and increase **Max Distance** for larger motions. When you get close, reduce **Feed** to 500, then 50, or even 10.
+Choose **Jog** to enter the Jog menu. Use arrow keys to jog the spindle. Press `Tab` to cycle through speed presets—start with Fast, then switch to Slow or Creep as you get close.
 
-![jogging](img/jogging.png)
-
-Ensure that you set the zero point slightly away from the clip [see image below], but don't worry about the exact height. You can stay slightly above the surface. Try to get it within 1mm. We will take care of Z below.
+Move the mill bit to the bottom left corner of the copper clad. Ensure that you set the zero point slightly away from the clip [see image below].
 
 ![zero](img/zero.png)
 
-Once the mill is positioned correctly, press the **Zero (G10)** button and then **Send** it to the machine.
+Lower the bit to roughly 2mm above the surface using Page Down. Then press `P` to **Find Z**—the bit will probe down until it touches the copper. The photo below shows the BitZero light turned red, confirming successful contact.
 
-If you need to re-home or reset the machine, you can verify that X and Y are still correct by sending `G0 X0 Y0` (or your **Home to (0, 0)** macro) to the machine using the **Manual** menu. Make sure the mill is high enough when you do!
+![probe-contact](img/probe-contact.png)
 
-### Raise the bit to a comfortable height
+Once the probe completes, press `0` to **Zero All (XYZ)**.
 
-Set **Feed** to 5000 and raise the bit. Center it roughly above the copper clad.
+### Probe the surface
 
-### Ensure Manual Probe offsets are zero
+Choose **Probe** from the main menu. You'll be prompted to enter:
 
-Open the **Manual Probe** menu and set both **Probe Offset** values to 0.
+- **Probe margin**: Extra space around the G-code bounds (default 0.5mm). This ensures the probe grid covers slightly beyond your PCB traces.
+- **Grid size**: Distance between probe points (default 5mm). Smaller values give more accurate height compensation but take longer.
 
-![probe-offset](img/probe-offset.png)
-
-### Prepare Auto-Level probing
-
-Open the **Probe** menu:
-
-- If necessary, press **Clear**.
-- Press **Create New**.
-- Set Grid Size to 3 or 4. (5 is not enough; 2 is probably unnecessary.)
-- Set X and Y values such that the red dots surround your PCB. The PCB needs to fit **inside** the red dots, including the square/rectangle cutout lines, which are going to be etched, also. You should add at least a margin 2mm around your PCB.
-- You can have OpenCNCPilot auto-generate the probe area by using `Size from Gcode`; set it to `1mm` and press **Apply**.
-- **Hint:** If you are concerned about probing past the edge of the copper clad—trust me, this will happen to you too, and you'll break your drill bit—you should manually jog the mill to the edge. The user interface will show you (through the blue virtual mill) where you are. You can arrange the red dots accordingly, ensuring you always stay on the copper clad.
-- Press **OK**.
-
-![probe-grid](img/probe-grid.png)
-
-### Get hardware ready
-
-- Attach the magnet against the collar.
-- Clip the alligator clip on the copper clad.
-- Clip the other alligator clip on the BitZero rig.
-
-![bitzero-rig](img/bitzero-rig2.png)
+coppercli then creates the probe grid using the bounds of your G-code file plus the margin you specified.
 
 ### Run Probe
 
-Stay close to the machine.
+Choose **Start Probing**. You'll be asked: **Traverse outline first?**
 
-- Verify that the mill is positioned in the center above the copper clad.
-- Press **Run** in the **Probe** menu.
+**Traverse**: Before probing, the spindle will move around the outer boundary of the probe area. You'll be prompted for a traverse height and feed rate—choose a height where you can visually verify that the spindle stays within the copper clad. Watch the traverse carefully. If the spindle goes past the edge of your copper, press `Escape` to cancel and reposition your work zero before probing begins.
 
-If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu, and sometimes, you need to use the one at the top of the user interface.
+After the traverse, probing begins. The mill will lower until it touches the surface, then visit all probe points. A visual matrix shows progress with color-coded heights indicating surface variation.
 
-The mill will lower very, very slowly until it touches the surface of the copper clad. It will visit all red points. Don't worry about the order; it will eventually visit all of them.
+After traversing, coppercli starts probing and creates a colorful heightmap. Red is high, blue is low.
 
-The result will be a height map:
+![probing](img/probing.png)
 
-![heightmap](img/heightmap.png)
+Press `Escape` at any time to stop. coppercli auto-saves progress, so you can resume an interrupted probe session later.
 
 ### Remove all hardware
 
 Remove all the hardware from the CNC. Carefully remove the alligator clip without pulling on the copper clad.
 
-### Apply HeightMap
+### Apply probe data and mill
 
-In the **Edit** menu, press **Apply HeightMap**.
+After probing completes, coppercli will prompt you to apply the probe data to the G-code and proceed to milling. The milling screen shows progress, position, and ETA.
 
-### Start!
+![milling](img/milling-screen.png)
 
-Under **File**, press **Start**.
-
-If the machine pauses or freezes, press the **Start** button. There are **TWO** Start buttons! Sometimes, you need to use the one in the **File** menu; at other times, you need to use the one at the top of the user interface. (I am [confused about this](https://github.com/martin2250/OpenCNCPilot/issues/200).)
+- `P` to pause
+- `R` to resume
+- `X` to stop (raises Z and stops spindle)
 
 ### Replacing bits for drilling, outline, and/or flipping the copper clad
 
 When you replace a bit (for example, to go from milling to drilling), you **must set Z again**:
 
-- Using keyboard jogging, raise the mill to a comfortable height.
+- From the Jog menu, raise the mill to a comfortable height (use Page Up repeatedly).
 
 - Replace the bit.
 
 - Attach the rigged BitZero.
 
-- Using keyboard jogging, carefully lower the Feed from 5000 to 500 to 50 to 10 until the bit touches the copper clad and the BitZero light turns red.
+- Use the Jog menu to carefully lower the bit. Press `Tab` to switch to Creep speed as you get close. Lower until the bit touches the copper clad and the BitZero light turns red.
 
-- Send the `G10 L20 P1 Z0` command or use the **Set Z=0** macro you created. You have now re-zeroed Z.
+- Press `Z` to **Zero Z only**. You have now re-zeroed Z.
 
-- **Load** the drilling Gcode (or the outline Gcode, depending on what you're doing)
+- Return to main menu and choose **Load G-Code** to load the drilling G-code (or outline G-code).
 
-- **DO NOT Apply HeightMap on (mill) drill files**
+- **DO NOT probe again for drill files** — go directly to milling.
 
-- **Start**
+- Choose **Mill** to start.
 
-If you flipped the board, you must zero X, Y, and Z, and re-plot before milling/drilling again:
+If you flipped the board, you must zero X, Y, and Z, and re-probe before milling/drilling again:
 
-- Using keyboard jogging, raise the mill to a comfortable height.
+- From the Jog menu, raise the mill to a comfortable height.
 - Replace the bit.
 - Attach the rigged BitZero.
-- Using keyboard jogging, move the drill anywhere over the board, then carefully lower the drill bit (while decreasing the Feed from 5000 to 500 to 50 to 10 as you do this) until the BitZero turns red.
-- Press the **Zero (G91)** key and **Send**.
-- Raise the mill back to a comfortable height.
+- Jog the drill anywhere over the board, then carefully lower until the BitZero turns red.
+- Press `0` to **Zero All (XYZ)**.
 - Remove the rigged BitZero.
-- If you flipped the board, you must plot a height map again before milling or drilling and **Apply HeightMap** to the drill file.
+- If you flipped the board, you must probe again before milling and apply the probe data.
 
 # Soldering
 
