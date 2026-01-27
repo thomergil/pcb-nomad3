@@ -24,9 +24,9 @@ Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) for
 
 This has been tested on a [Carbide 3D Nomad 3](https://shop.carbide3d.com/products/nomad-3) CNC Mill.
 
-# Mac? Windows? Linux?
+# <img src="img/coppercli-logo.jpg" height="32" alt="coppercli logo" /> coppercli
 
-[coppercli](https://github.com/thomergil/coppercli) runs on macOS, Linux, and Windows. It needs to be attached directly to the CNC machine via USB serial or Ethernet (untested).
+[coppercli](https://github.com/thomergil/coppercli) is a lightweight terminal-based tool for PCB milling with GRBL CNC machines, featuring probe-based auto-leveling, session recovery, real-time visualization, network proxy mode, and cross-platform support.
 
 # PCB blanks / Copper Clad
 
@@ -289,7 +289,7 @@ Then press the copper clad into the jig with a poper towel:
 
 ![clad-in-jig](img/clad-in-jig.png)
 
-# coppercli
+# <img src="img/coppercli-logo.jpg" height="32" alt="coppercli logo" /> coppercli
 
 [coppercli](https://github.com/thomergil/coppercli) is a keyboard-driven CLI tool for PCB milling with auto-leveling. See the [coppercli README](https://github.com/thomergil/coppercli#readme) for installation instructions and full documentation.
 
