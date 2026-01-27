@@ -2,7 +2,7 @@
 
 I tried everything between [Carbide Copper](https://carbide3d.com/copper/), which seems abandoned at best and buggy at worst: it does not seem to spin the spindle. I played with [FlatCAM](http://flatcam.org/) and [bCNC](https://github.com/vlachoudis/bCNC), which I used to brick my Nomad 3. (I provide [instructions to reset the GRBL on a Nomad 3](https://github.com/thomergil/carbide3d-grbl-recovery?tab=readme-ov-file), much thanks to Carbide 3D support.)
 
-Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) for generating G-code and [coppercli](https://github.com/thomergil/coppercli) for auto-leveling. coppercli is a cross-platform keyboard-driven CLI, originally based on [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot).
+Ultimately, I settled on [pcb2gcode](https://github.com/pcb2gcode/pcb2gcode) for generating G-code and [coppercli](https://github.com/thomergil/coppercli) for copper milling. coppercli is a cross-platform keyboard-driven CLI, originally based on [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot).
 
 # Example results
 
