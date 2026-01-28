@@ -26,7 +26,7 @@ This has been tested on a [Carbide 3D Nomad 3](https://shop.carbide3d.com/produc
 
 # <img src="img/coppercli-logo.jpg" height="32" alt="coppercli logo" /> coppercli
 
-[coppercli](https://github.com/thomergil/coppercli) is a lightweight terminal-based tool for PCB milling with GRBL CNC machines, featuring probe-based auto-leveling, session recovery, real-time visualization, network proxy mode, and cross-platform support.
+[coppercli](https://github.com/thomergil/coppercli) is a terminal-based tool for PCB milling with GRBL CNC machines. Probe-based auto-leveling, automatic tool changes (M6), macros, session recovery, and real-time visualization. Cross-platform. Originally based on [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot).
 
 # PCB blanks / Copper Clad
 
@@ -299,7 +299,7 @@ Then press the copper clad into the jig with a poper towel:
 
 # <img src="img/coppercli-logo.jpg" height="32" alt="coppercli logo" /> coppercli
 
-[coppercli](https://github.com/thomergil/coppercli) is a keyboard-driven CLI tool for PCB milling with auto-leveling. See the [coppercli README](https://github.com/thomergil/coppercli#readme) for installation instructions and full documentation.
+[coppercli](https://github.com/thomergil/coppercli) is a terminal-based tool for PCB milling with GRBL CNC machines. Probe-based auto-leveling, automatic tool changes (M6), macros, session recovery, and real-time visualization. Cross-platform. Originally based on [OpenCNCPilot](https://github.com/martin2250/OpenCNCPilot). See the [coppercli README](https://github.com/thomergil/coppercli#readme) for installation instructions and full documentation.
 
 ### General notes
 
@@ -314,7 +314,9 @@ Switching **to** coppercli after using Carbide Motion is usually OK. However, us
 
 ### Start coppercli
 
-Run `coppercli` from the command line. From the main menu, choose **Connection**. coppercli will auto-detect your serial port and baud rate. Once connected, it will offer to home the machine.
+Run `coppercli` from the command line. On first run, go to **Settings** and select your **Machine Profile** (e.g., Nomad 3). This configures the machine-specific tool setter position.
+
+From the main menu, choose **Connection**. coppercli will auto-detect your serial port and baud rate. Once connected, it will offer to home the machine.
 
 **If it's not working**: reset the machine, restart coppercli. Make sure the door magnet is engaged.
 
@@ -330,7 +332,7 @@ Move the mill bit to the bottom left corner of the copper clad. Ensure that you 
 
 ![zero](img/zero.png)
 
-Lower the bit to roughly 2mm above the surface using Page Down. Then press `P` to **Find Z**—the bit will probe down until it touches the copper. The photo below shows the BitZero light turned red, confirming successful contact.
+Lower the bit to roughly 2mm above the surface using Page Down. Then press `P` to **Probe Z**—the bit will probe down until it touches the copper. The photo below shows the BitZero light turned red, confirming successful contact.
 
 ![probe-contact](img/probe-contact.png)
 
@@ -347,13 +349,13 @@ coppercli then creates the probe grid using the bounds of your G-code file plus 
 
 ### Run Probe
 
-Choose **Start Probing**. You'll be asked: **Traverse outline first?**
+Choose **Start Probing**. You'll be asked: **Trace outline first?**
 
-**Traverse**: Before probing, the spindle will move around the outer boundary of the probe area. You'll be prompted for a traverse height and feed rate—choose a height where you can visually verify that the spindle stays within the copper clad. Watch the traverse carefully. If the spindle goes past the edge of your copper, press `Escape` to cancel and reposition your work zero before probing begins.
+**Trace outline**: Before probing, the spindle will move around the outer boundary of the probe area. You'll be prompted for a trace height and feed rate—choose a height where you can visually verify that the spindle stays within the copper clad. Watch the trace carefully. If the spindle goes past the edge of your copper, press `Escape` to cancel and reposition your work zero before probing begins.
 
-After the traverse, probing begins. The mill will lower until it touches the surface, then visit all probe points. A visual matrix shows progress with color-coded heights indicating surface variation.
+After the trace, probing begins. The mill will lower until it touches the surface, then visit all probe points. A visual matrix shows progress with color-coded heights indicating surface variation.
 
-After traversing, coppercli starts probing and creates a colorful heightmap. Red is high, blue is low.
+After tracing, coppercli starts probing and creates a colorful heightmap. Red is high, blue is low.
 
 ![probing](img/probing.png)
 
@@ -371,7 +373,8 @@ After probing completes, coppercli will prompt you to apply the probe data to th
 
 - `P` to pause
 - `R` to resume
-- `X` to stop (raises Z and stops spindle)
+- `X` to stop
+- +/-/0 to increase, reduce, and bring the feed rate back to 100%
 
 ### Tool changes (milling → drilling → outline)
 
@@ -379,7 +382,7 @@ If you used `--multi` to create a single `_000_all.ngc` file, coppercli handles 
 
 1. Pause and display which tool to load
 2. Move to an accessible position for bit swapping
-3. Wait for you to change the bit and press P to proceed
+3. Wait for you to change the bit and press Y to proceed
 4. Automatically re-zero Z using the tool setter (if configured in Settings → Machine Profile)
 5. Resume milling with the new tool
 
