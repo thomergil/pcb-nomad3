@@ -176,7 +176,7 @@ mill-feed=100        # Feed rate in mm/minute; can go up to 600, or even 800.
                      # That will DRAMATICALLY speed up the milling process at the price
                      # of slightly more granural cuts.
 mill-speed=12000     # RPM for milling; can go up to 14000 or even 16000
-nom6=1               # Don't issue M6 command
+nom6=1               # Suppress tool changes; pcb2gcode-wrapper --multi handles them
 spinup-time=3.0      # Time to spin up the spindle in seconds
 spindown-time=3.0    # Time to spin up the spindle in seconds
 backtrack=1          # Allow retracing through existing path; speedup
@@ -215,7 +215,7 @@ Some of these values are **critically important**:
 - `zsafe` is the travel height of the mill bit; **if this is too low your bit will crash into the jig, breaking the mill or worse**. Once you get the hang of it, you can make this as low as 2.
 - `zchange` is the height for changing the mill bit; if you choose this number too high and your drill bit is long, the process will error out, because it runs into the hard limit of the machine.
 - `zwork` is how deep the mill drills into the copper substrate; start with `0.05` and iterate deeper as needed; this also depends on the V-bit you are using.
-- `nom6=1` prevents `pcb2gcode` from issuing an `M6` command, which trips up the Nomad 3.
+- `nom6=1` suppresses tool change commands in individual files. Instead, `pcb2gcode-wrapper --multi` adds tool changes when combining files, giving us control over when and how tool changes happen.
 - `nog81` prevents `pcb2gcode` from issuing `G81` commands, which trips up OpenCNCPilot.
 - For `--mill-diameters` you can use this [tool cutting width calculator](https://hobbycnc.com/tool-width-calculator/) to figure out the correct number.
 - Once you're comfortable with the process, you can **dramatically speed it up** by increasing values marked "can go up to" in the comments above: `mill-feed`, `mill-speed`, `drill-feed`, and `drill-speed`. Higher speeds mean faster operation but may produce slightly rougher cuts.
@@ -276,6 +276,14 @@ $ pcb2gcode-wrapper decibel-meter --mill-diameters=0.169 --x-margin 10 --y-margi
 ```
 
 The wrapper automatically runs `pcb2gcode-fixup` (swaps initial XY/Z moves for safety) and `pcb2gcode-combine` (merges drill/milldrill/outline into a single file when they use the same bit).
+
+For a single-file workflow with automatic tool changes, add `--multi`:
+
+```bash
+$ pcb2gcode-wrapper decibel-meter --mill-diameters=0.169 --multi
+```
+
+This creates an additional `_000_all.ngc` file that combines milling and drilling with automatic tool change pauses. When you run this file in coppercli, it will pause at each tool change, guide you through swapping bits, and re-zero Z using the tool setter (if configured) or manual probing.
 
 Either way, you should now have `.ngc` files.
 
@@ -365,35 +373,29 @@ After probing completes, coppercli will prompt you to apply the probe data to th
 - `R` to resume
 - `X` to stop (raises Z and stops spindle)
 
-### Replacing bits for drilling, outline, and/or flipping the copper clad
+### Tool changes (milling → drilling → outline)
 
-When you replace a bit (for example, to go from milling to drilling), you **must set Z again**:
+If you used `--multi` to create a single `_000_all.ngc` file, coppercli handles tool changes automatically. When a tool change is needed, coppercli will:
 
-- From the Jog menu, raise the mill to a comfortable height (use Page Up repeatedly).
+1. Pause and display which tool to load
+2. Move to an accessible position for bit swapping
+3. Wait for you to change the bit and press P to proceed
+4. Automatically re-zero Z using the tool setter (if configured in Settings → Machine Profile)
+5. Resume milling with the new tool
 
-- Replace the bit.
+If you don't have a tool setter configured, coppercli will prompt you to manually probe the surface with the new bit.
 
-- Attach the rigged BitZero.
+### Flipping the board (double-sided PCBs)
 
-- Use the Jog menu to carefully lower the bit. Press `Tab` to switch to Creep speed as you get close. Lower until the bit touches the copper clad and the BitZero light turns red.
+If you flip the board for double-sided milling, you must re-zero and re-probe:
 
-- Press `Z` to **Zero Z only**. You have now re-zeroed Z.
-
-- Return to main menu and choose **Load G-Code** to load the drilling G-code (or outline G-code).
-
-- **DO NOT probe again for drill files** — go directly to milling.
-
-- Choose **Mill** to start.
-
-If you flipped the board, you must zero X, Y, and Z, and re-probe before milling/drilling again:
-
-- From the Jog menu, raise the mill to a comfortable height.
-- Replace the bit.
-- Attach the rigged BitZero.
-- Jog the drill anywhere over the board, then carefully lower until the BitZero turns red.
-- Press `0` to **Zero All (XYZ)**.
-- Remove the rigged BitZero.
-- If you flipped the board, you must probe again before milling and apply the probe data.
+- From the Jog menu, raise the mill to a comfortable height
+- Flip the board
+- Attach the rigged BitZero
+- Jog over the board and lower until the BitZero turns red
+- Press `0` to **Zero All (XYZ)**
+- Remove the rigged BitZero
+- **Probe again** before milling—the height map from the other side doesn't apply
 
 # Soldering
 
